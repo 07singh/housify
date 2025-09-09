@@ -28,20 +28,20 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child: Container(
-          width: size.width, // 🔹 Full width
-          height: size.height, // 🔹 Full height
+          width: size.width,
+          height: size.height,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(30), // 🔹 Rounded corners
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20), // 🔹 Same padding
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start, // 🔹 Left alignment
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 50),
 
-                // Left-aligned Heading
+                // Heading
                 const Text(
                   'Forget Password',
                   style: TextStyle(
@@ -53,7 +53,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
                 const SizedBox(height: 30),
 
-                // Form Content
+                // Form
                 Form(
                   key: _formKey,
                   onChanged: _checkValid,
@@ -66,10 +66,15 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Email Input
+                      // Email Field
                       TextFormField(
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z0-9@._\-+]'),
+                          ),
+                        ],
                         decoration: InputDecoration(
                           hintText: 'Email Address',
                           hintStyle: const TextStyle(color: Colors.grey),
@@ -78,10 +83,13 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           ),
                         ),
                         validator: (val) {
+                          val = val?.trim();
                           if (val == null || val.isEmpty) {
                             return 'Enter email';
                           }
-                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(val)) {
+                          if (!RegExp(
+                              r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                              .hasMatch(val)) {
                             return 'Enter valid email';
                           }
                           return null;
@@ -107,8 +115,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           ),
                           child: const Text(
                             'Reset Password',
-                            style:
-                            TextStyle(fontSize: 16, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.white),
                           ),
                         ),
                       ),

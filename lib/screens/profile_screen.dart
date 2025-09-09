@@ -7,6 +7,7 @@ import 'housify_home_screen.dart';
 import 'offers_screen.dart';
 import 'history_screen.dart';
 import 'notification_screen.dart';
+import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -209,7 +210,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const HousifyHomeScreen()),
+                            builder: (_) => const LoginScreen()),
                       );
                     }),
                   ],
@@ -268,22 +269,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _switchTile(
-      {required String title,
-        required String subtitle,
-        required IconData icon}) {
+  /// ✅ Fixed overflow for notifications
+  Widget _switchTile({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
     return SwitchListTile(
+      contentPadding: EdgeInsets.zero,
       title: Row(
         children: [
           Icon(icon, color: Colors.grey),
           const SizedBox(width: 8),
-          Text(
-              maxLines: 2,
-              overflow:TextOverflow.ellipsis,
-              title),
+          Flexible(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+          ),
         ],
       ),
-      subtitle: Text(subtitle),
+      subtitle: Text(
+        subtitle,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontSize: 14, color: Colors.grey),
+      ),
       value: true,
       onChanged: (bool value) {},
       activeColor: const Color(0xFFFF7043),

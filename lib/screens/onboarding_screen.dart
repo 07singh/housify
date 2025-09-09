@@ -159,7 +159,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       style: TextStyle(
                         fontFamily: "Poppins", // 👈 Custom Font
                         fontSize: size.width * 0.08,
-                        fontWeight: FontWeight.w600, // 600 = SemiBold
+                        fontWeight: FontWeight.bold, // 600 = SemiBold
                       ),
                       textAlign: TextAlign.center,
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -15,6 +16,42 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
 
   @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  // ✅ Email validation (production-level)
+  String? _validateEmail(String? val) {
+    val = val?.trim();
+    if (val == null || val.isEmpty) {
+      return 'Enter email';
+    }
+    // Industry standard regex for email
+    if (!RegExp(
+        r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+        .hasMatch(val)) {
+      return 'Invalid email';
+    }
+    return null; // ✅ No error if valid
+  }
+
+  // ✅ Password validation (production-level)
+  String? _validatePassword(String? val) {
+    if (val == null || val.isEmpty) {
+      return 'Enter password';
+    }
+    // At least 8 chars, one upper, one lower, one digit, one special char
+    if (!RegExp(
+        r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}$')
+        .hasMatch(val)) {
+      return 'Invalid password (8+ chars, upper, lower, number, special)';
+    }
+    return null; // ✅ No error if valid
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
@@ -28,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 60), // top spacing
+              const SizedBox(height: 60),
 
               // ✅ Heading Section
               Padding(
@@ -44,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 10), // proper gapping
+                    SizedBox(height: 10),
                     Text(
                       'Welcome back,\n you\'ve been missed!',
                       style: TextStyle(
@@ -65,26 +102,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: SingleChildScrollView(
                     child: Form(
                       key: _formKey,
+                      autovalidateMode:
+                      AutovalidateMode.onUserInteraction, // ✅ live check
                       child: Column(
                         children: [
                           // Email
                           TextFormField(
                             controller: emailController,
                             keyboardType: TextInputType.emailAddress,
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return 'Enter email';
-                              }
-                              if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(val)) {
-                                return 'Enter valid email';
-                              }
-                              return null;
-                            },
+                            validator: _validateEmail,
+                            textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
                               hintText: 'Email Address',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
+                              errorStyle: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -93,20 +127,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextFormField(
                             controller: passwordController,
                             obscureText: true,
-                            validator: (val) {
-                              if (val == null || val.isEmpty) {
-                                return 'Enter password';
-                              }
-                              if (val.length < 6) {
-                                return 'Password too short';
-                              }
-                              return null;
-                            },
+                            validator: _validatePassword,
+                            textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
                               hintText: 'Password',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
+                              errorStyle: const TextStyle(
+                                  color: Colors.red, fontSize: 12),
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -120,7 +149,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Checkbox(
                                     value: _rememberMe,
                                     onChanged: (val) {
-                                      setState(() => _rememberMe = val ?? false);
+                                      setState(() =>
+                                      _rememberMe = val ?? false);
                                     },
                                   ),
                                   const Text('Remember Me'),
@@ -128,7 +158,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/forget_password');
+                                  Navigator.pushNamed(
+                                      context, '/forget_password');
                                 },
                                 child: const Text(
                                   'Forgot Password ?',
@@ -144,7 +175,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Login Button
                           ElevatedButton(
                             onPressed: () {
-                              if (_formKey.currentState?.validate() == true) {
+                              if (_formKey.currentState?.validate() ==
+                                  true) {
                                 Navigator.pushNamedAndRemoveUntil(
                                     context, '/home', (route) => false);
                               }
@@ -163,7 +195,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 20),
 
-                          const Text('OR', style: TextStyle(color: Colors.grey)),
+                          const Text('OR',
+                              style: TextStyle(color: Colors.grey)),
 
                           const SizedBox(height: 20),
 

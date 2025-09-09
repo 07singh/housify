@@ -1,21 +1,4 @@
 import 'package:flutter/material.dart';
-import 'shifthing_confrimation_screen.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: OrderDetailsScreen(),
-    );
-  }
-}
 
 class OrderDetailsScreen extends StatelessWidget {
   const OrderDetailsScreen({super.key});
@@ -222,14 +205,18 @@ class OrderDetailsScreen extends StatelessWidget {
 
                     const SizedBox(height: 24),
 
-                    // Payment method
+                    // Payment method (horizontal like PNG)
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildPaymentOption(
-                            Icons.credit_card, "Online Payment", true),
-                        _buildPaymentOption(
-                            Icons.account_balance_wallet, "Cash", false),
+                        Expanded(
+                          child: _buildPaymentOption(
+                              Icons.credit_card, "Online Payment", true),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildPaymentOption(
+                              Icons.account_balance_wallet, "Cash", false),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -240,7 +227,8 @@ class OrderDetailsScreen extends StatelessWidget {
           ],
         ),
       ),
-      // ✅ Fixed Confirm Button
+
+      // Confirm Button
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
         child: SizedBox(
@@ -251,8 +239,7 @@ class OrderDetailsScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              elevation: 0, // no shadow
-              side: BorderSide.none, // no border
+              elevation: 0,
             ),
             onPressed: () {},
             child: const Text(
@@ -260,7 +247,7 @@ class OrderDetailsScreen extends StatelessWidget {
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16),
+                  fontSize: 18),
             ),
           ),
         ),
@@ -272,17 +259,23 @@ class OrderDetailsScreen extends StatelessWidget {
       String emoji, String title, String subtitle, String price) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFF9F9F9), // ✅ matches PNG
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: const Color(0xFFF5F5F5),
-            child: Text(emoji, style: const TextStyle(fontSize: 20)),
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(emoji, style: const TextStyle(fontSize: 22)),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -290,7 +283,8 @@ class OrderDetailsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 14)),
                 Text(subtitle,
                     style: const TextStyle(
                       fontSize: 12,
@@ -301,7 +295,9 @@ class OrderDetailsScreen extends StatelessWidget {
           ),
           Text(price,
               style: const TextStyle(
-                  color: Colors.orange, fontWeight: FontWeight.bold)),
+                  color: Colors.orange,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14)),
         ],
       ),
     );
@@ -332,22 +328,22 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildPaymentOption(IconData icon, String label, bool selected) {
-    return Container(
-      width: 150,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-            color: selected ? Colors.orange : Colors.grey.shade300, width: 2),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: selected ? Colors.black : Colors.grey, size: 28),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return Stack(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+                color: selected ? Colors.orange : Colors.grey.shade300,
+                width: 2),
+          ),
+          child: Row(
             children: [
+              Icon(icon,
+                  color: selected ? Colors.black : Colors.grey, size: 28),
+              const SizedBox(width: 12),
               Text(
                 label,
                 style: TextStyle(
@@ -355,16 +351,16 @@ class OrderDetailsScreen extends StatelessWidget {
                   color: selected ? Colors.black : Colors.grey,
                 ),
               ),
-              const SizedBox(width: 6),
-              if (selected)
-                const Icon(Icons.check_circle, color: Colors.orange, size: 18),
-              if (!selected)
-                const Icon(Icons.circle_outlined,
-                    color: Colors.grey, size: 18),
             ],
-          )
-        ],
-      ),
+          ),
+        ),
+        if (selected)
+          const Positioned(
+            right: 8,
+            top: 8,
+            child: Icon(Icons.check_circle, color: Colors.orange, size: 20),
+          ),
+      ],
     );
   }
 }

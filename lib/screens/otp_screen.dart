@@ -52,7 +52,7 @@ class _OTPScreenState extends State<OTPScreen> {
     super.dispose();
   }
 
-  /// ✅ Final Format: (+91)9876543210
+  /// ✅ Final Format: (+91) 9876543210
   String _formatPhoneWithCountryCode(String fullNumber) {
     // remove all spaces
     fullNumber = fullNumber.replaceAll(" ", "");
@@ -64,10 +64,11 @@ class _OTPScreenState extends State<OTPScreen> {
     if (match != null) {
       final countryCode = match.group(0)!; // +91
       final phoneNumber = fullNumber.substring(match.end); // 9876543210
-      return "($countryCode)$phoneNumber"; // => (+91)9876543210
+      return "($countryCode) $phoneNumber"; // => (+91) 9876543210
     }
     return fullNumber;
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -2,20 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:house_service/screens/painting_choose_screen.dart';
 import 'notification_screen.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: PaintingServiceScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
 class PaintingServiceScreen extends StatefulWidget {
   @override
   _PaintingServiceScreenState createState() => _PaintingServiceScreenState();
@@ -112,68 +98,21 @@ class _PaintingServiceScreenState extends State<PaintingServiceScreen> {
                           ),
                           const SizedBox(height: 16),
 
-                          // 🔥 Offers Section (Scrollable Row)
+                          // 🔥 Offers Section (uniform design)
                           SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: [
-                                Container(
-                                  width: 220,
-                                  margin: const EdgeInsets.only(right: 16),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF5A623),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: const [
-                                      Row(
-                                        children: [
-                                          Text('Shifty',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16)),
-                                          Spacer(),
-                                          Icon(Icons.person,
-                                              color: Colors.white, size: 64),
-                                        ],
-                                      ),
-                                      SizedBox(height: 8),
-                                      Text('40% OFF',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold)),
-                                      Text('On First Cleaning Service',
-                                          style: TextStyle(color: Colors.white)),
-                                    ],
-                                  ),
+                                _offerCard(
+                                  title: "40% OFF",
+                                  subtitle: "On First Cleaning Service",
+                                  color: const Color(0xFFF5A623),
                                 ),
-                                Container(
-                                  width: 220,
-                                  margin: const EdgeInsets.only(right: 16),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.orange,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: const [
-                                      Text('Shifty',
-                                          style: TextStyle(
-                                              color: Colors.white, fontSize: 16)),
-                                      SizedBox(height: 8),
-                                      Text('10% OFF',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold)),
-                                      Text('Online Pay',
-                                          style: TextStyle(color: Colors.white)),
-                                    ],
-                                  ),
+                                const SizedBox(width: 12),
+                                _offerCard(
+                                  title: "10% OFF",
+                                  subtitle: "Online Pay",
+                                  color: Colors.orange,
                                 ),
                               ],
                             ),
@@ -360,6 +299,45 @@ class _PaintingServiceScreenState extends State<PaintingServiceScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // ✅ Reusable Offer Card Widget
+  Widget _offerCard({
+    required String title,
+    required String subtitle,
+    required Color color,
+  }) {
+    return Container(
+      width: 220,
+      margin: const EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Shifty",
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            subtitle,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
+        ],
       ),
     );
   }

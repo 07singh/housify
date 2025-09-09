@@ -18,6 +18,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final TextEditingController _phoneController = TextEditingController();
 
   int maxPhoneLength = 10; // Default India
+  String? phoneError; // 👈 validation error text
 
   // 🔹 Helper function: get max length from example number
   int getMaxLengthForCountry(Country country) {
@@ -37,7 +38,33 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       showCountryDropdown = false;
       _phoneController.clear();
       phoneNumber = '';
+      phoneError = null;
     });
+  }
+
+  // 🔹 Phone validation (Production Level)
+  String? validatePhone(String value) {
+    if (value.isEmpty) {
+      return "Phone number is required";
+    }
+    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+      return "Only digits are allowed";
+    }
+    if (value.length < 7 || value.length > 15) {
+      return "Enter a valid phone number (7-15 digits)";
+    }
+
+    // ❌ All zeros
+    if (RegExp(r'^0+$').hasMatch(value)) {
+      return "Invalid phone number (all zeros not allowed)";
+    }
+
+    // ❌ 4+ repeating same digit (including zero)
+    if (RegExp(r'(\d)\1{3,}').hasMatch(value)) {
+      return "Invalid phone number (digit repeated too many times)";
+    }
+
+    return null; // ✅ Valid
   }
 
   Widget _buildCountryDropdown() {
@@ -81,7 +108,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(), // Dismiss keyboard
+        onTap: () => FocusScope.of(context).unfocus(),
         child: Center(
           child: Container(
             width: size.width,
@@ -132,7 +159,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             ),
                             border: Border(
                               bottom: BorderSide(
-                                color: Colors.grey.shade300, // 👈 Visible line
+                                color: Colors.grey.shade300,
                                 width: 1,
                               ),
                             ),
@@ -158,20 +185,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                       // Phone number input
                       Container(
-                        height: 50,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF7F7F7),
-                          borderRadius: BorderRadius.vertical(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF7F7F7),
+                          borderRadius: const BorderRadius.vertical(
                             bottom: Radius.circular(12),
+                          ),
+                          border: Border.all(
+                            color: phoneError != null
+                                ? Colors.red
+                                : Colors.transparent,
                           ),
                         ),
                         child: TextField(
                           controller: _phoneController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Phone number',
                             counterText: '',
+                            errorText: phoneError, // 👈 instant error show
                           ),
                           keyboardType: TextInputType.number,
                           inputFormatters: [
@@ -182,6 +214,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           onChanged: (value) {
                             setState(() {
                               phoneNumber = value;
+                              phoneError = validatePhone(value);
                             });
                           },
                         ),
@@ -191,7 +224,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                   SizedBox(height: size.height * 0.02),
 
-                  // 🔹 Plain text only (not clickable anymore)
                   const Center(
                     child: Text(
                       'Privacy and Agreements',
@@ -209,21 +241,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        final fullNumber = '$selectedCountryCode$phoneNumber';
-                        if (phoneNumber.length == maxPhoneLength) {
+                        final error = validatePhone(phoneNumber);
+                        if (error == null) {
+                          final fullNumber = '($selectedCountryCode)$phoneNumber';
                           Navigator.pushNamed(
                             context,
                             '/otp',
                             arguments: {'phoneNumber': fullNumber},
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Please enter a valid $maxPhoneLength-digit phone number',
-                              ),
-                            ),
-                          );
+                          setState(() {
+                            phoneError = error;
+                          });
                         }
                       },
                       style: ElevatedButton.styleFrom(

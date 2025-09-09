@@ -51,10 +51,8 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // ✅ Black top bar
             _Header(onBack: () => Navigator.pop(context)),
 
-            // ✅ Main content in white rounded container
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -70,6 +68,11 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                         const Text("House Size",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "Select your house rooms and kitchen in order to measure the total cost.",
+                          style: TextStyle(color: Colors.grey, fontSize: 13),
+                        ),
                         const SizedBox(height: 12),
 
                         SingleChildScrollView(
@@ -99,6 +102,11 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                         const Text("Furnitures",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "Approximate furnitures",
+                          style: TextStyle(color: Colors.grey, fontSize: 13),
+                        ),
                         const SizedBox(height: 12),
 
                         GridView.count(
@@ -116,8 +124,10 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                                   Container(
                                     margin: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.grey.shade100,
+                                      color: Colors.white,
                                       borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                          color: Colors.grey.shade300, width: 1),
                                     ),
                                     child: Center(
                                       child: Column(
@@ -147,36 +157,70 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                         ),
 
                         const SizedBox(height: 20),
-                        const Text("Packed Boxes (below 10Kg)",
+                        const Text("Packed Boxes",
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove_circle_outline),
-                                  onPressed: () => setState(() =>
-                                  packedBoxes =
-                                  packedBoxes > 0 ? packedBoxes - 1 : 0),
-                                ),
-                                Text("$packedBoxes",
-                                    style: const TextStyle(fontSize: 16)),
-                                IconButton(
-                                  icon: const Icon(Icons.add_circle_outline),
-                                  onPressed: () => setState(() => packedBoxes++),
-                                ),
-                              ],
-                            )
-                          ],
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "Weight below 10 Kg",
+                          style: TextStyle(color: Colors.grey, fontSize: 13),
                         ),
-                        const SizedBox(height: 90), // space for button
+                        const SizedBox(height: 10),
+
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 14),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                                color: Colors.grey.shade300, width: 1),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: const [
+                                  Icon(Icons.inventory_2,
+                                      color: Colors.orange, size: 28),
+                                  SizedBox(width: 12),
+                                  Text("Packed Boxes",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500)),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                        Icons.remove_circle_outline,
+                                        color: Colors.black54),
+                                    onPressed: () => setState(() =>
+                                    packedBoxes =
+                                    packedBoxes > 0 ? packedBoxes - 1 : 0),
+                                  ),
+                                  Text("$packedBoxes",
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold)),
+                                  IconButton(
+                                    icon: const Icon(
+                                        Icons.add_circle_outline,
+                                        color: Colors.black54),
+                                    onPressed: () =>
+                                        setState(() => packedBoxes++),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 90),
                       ],
                     ),
 
-                    // ✅ Proceed button properly sized
                     Positioned(
                       bottom: 0,
                       left: 0,
@@ -220,7 +264,6 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
     );
   }
 
-  // ✅ Header Widget
   Widget _Header({required VoidCallback onBack}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
@@ -255,7 +298,6 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
     );
   }
 
-  // ✅ House Size Card
   Widget _houseSizeCard({
     required String title,
     required String subtitle,
@@ -272,9 +314,11 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
             width: 90,
             height: 90,
             decoration: BoxDecoration(
-              color: Colors.grey.shade200,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(15),
-              border: selected ? Border.all(color: Colors.orange, width: 2) : null,
+              border: Border.all(
+                  color: selected ? Colors.orange : Colors.grey.shade300,
+                  width: selected ? 2 : 1),
             ),
             child: Stack(
               children: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -15,7 +16,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _zipController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+  TextEditingController();
 
   String? _selectedState;
   bool _agree = false;
@@ -24,18 +26,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // 🔹 Responsive screen size
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
         child: Container(
-          width: size.width,   // 🔹 Full responsive width
-          height: size.height, // 🔹 Full responsive height
+          width: size.width,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(100),
-            // ❌ Grey border removed
           ),
           child: Column(
             children: [
@@ -46,15 +46,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back),
-                      onPressed: () => Navigator.pop(context), // ← Back
+                      onPressed: () => Navigator.pop(context),
                     ),
-                    const Spacer(), // Push title to center
+                    const Spacer(),
                     const Text(
                       'Register',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    const Spacer(), // Equal space on right for center alignment
-                    const SizedBox(width: 48), // Optional, to balance arrow size
+                    const Spacer(),
+                    const SizedBox(width: 48),
                   ],
                 ),
               ),
@@ -67,49 +68,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Centered Getting Started section
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
                             SizedBox(height: 20),
                             Text(
                               'Getting Started',
-                              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 32, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.left,
                             ),
                             SizedBox(height: 10),
                             Text(
                               'Seems you are new here, \nLets set up your profile.',
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
-                              textAlign: TextAlign.center,
+                              style:
+                              TextStyle(fontSize: 16, color: Colors.grey),
+                              textAlign: TextAlign.left,
                             ),
                           ],
                         ),
+
                         const SizedBox(height: 20),
 
-                        // Name
+                        // ✅ Name Validation
                         _buildInputField(
                           label: 'Full Name',
                           controller: _nameController,
                           keyboardType: TextInputType.name,
+                          textCapitalization: TextCapitalization.words,
                           validator: (val) {
-                            if (val == null || val.isEmpty) return 'Enter name';
-                            if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(val)) {
-                              return 'Name can only contain letters';
+                            if (val == null || val.isEmpty) {
+                              return 'Enter name';
+                            }
+                            if (!RegExp(r'^[A-Z][a-zA-Z ]+$').hasMatch(val)) {
+                              return 'Start with capital, letters only';
+                            }
+                            if (val.length < 2) {
+                              return 'Name must be at least 2 characters';
                             }
                             return null;
                           },
-                          textCapitalization: TextCapitalization.words,
                         ),
 
-                        // Email
+                        // ✅ Email Validation
                         _buildInputField(
                           label: 'Email Address',
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           validator: (val) {
-                            if (val == null || val.isEmpty) return 'Enter email';
-                            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(val)) {
+                            if (val == null || val.isEmpty) {
+                              return 'Enter email';
+                            }
+                            if (!RegExp(
+                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                                .hasMatch(val)) {
                               return 'Enter valid email';
                             }
                             return null;
@@ -120,10 +132,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         _buildInputField(
                           label: 'Current Address',
                           controller: _addressController,
-                          validator: (val) => val == null || val.isEmpty ? 'Enter address' : null,
+                          validator: (val) => val == null || val.isEmpty
+                              ? 'Enter address'
+                              : null,
                         ),
 
-                        // Zip & State
                         Row(
                           children: [
                             Expanded(
@@ -132,42 +145,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 controller: _zipController,
                                 keyboardType: TextInputType.number,
                                 validator: (val) => val == null || val.isEmpty ? 'Enter Zip' : null,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                               ),
                             ),
                             const SizedBox(width: 10),
                             Expanded(
-                              child: DropdownButtonFormField<String>(
-                                decoration: InputDecoration(
-                                  hintText: 'State',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                              child: SizedBox(
+                                height: 60, // ✅ same height as TextFormField
+                                child: DropdownButtonFormField<String>(
+                                  decoration: InputDecoration(
+                                    hintText: 'State',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 16), // align text
                                   ),
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  value: _selectedState,
+                                  items: _states
+                                      .map((state) => DropdownMenuItem(
+                                    value: state,
+                                    child: Text(state),
+                                  ))
+                                      .toList(),
+                                  onChanged: (val) => setState(() => _selectedState = val),
+                                  validator: (val) =>
+                                  val == null || val.isEmpty ? 'Select state' : null,
                                 ),
-                                autovalidateMode: AutovalidateMode.onUserInteraction, // ✅ Added
-                                value: _selectedState,
-                                items: _states
-                                    .map((state) => DropdownMenuItem(
-                                  value: state,
-                                  child: Text(state),
-                                ))
-                                    .toList(),
-                                onChanged: (val) => setState(() => _selectedState = val),
-                                validator: (val) => val == null || val.isEmpty ? 'Select state' : null,
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 10),
 
-                        // Password
+                        // ✅ Password Validation
                         _buildInputField(
                           label: 'Password',
                           controller: _passwordController,
                           isPassword: true,
                           validator: (val) {
-                            if (val == null || val.isEmpty) return 'Enter password';
-                            if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$').hasMatch(val)) {
-                              return 'Use uppercase, lowercase & number';
+                            if (val == null || val.isEmpty) {
+                              return 'Enter password';
+                            }
+                            if (!RegExp(
+                                r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+                                .hasMatch(val)) {
+                              return 'Min 8 chars, upper, lower, number & special char';
                             }
                             return null;
                           },
@@ -179,12 +203,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           controller: _confirmPasswordController,
                           isPassword: true,
                           validator: (val) {
-                            if (val != _passwordController.text) return 'Passwords do not match';
+                            if (val != _passwordController.text) {
+                              return 'Passwords do not match';
+                            }
                             return null;
                           },
                         ),
 
-                        // Checkbox
                         Row(
                           children: [
                             Checkbox(
@@ -196,12 +221,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             Expanded(
                               child: RichText(
                                 text: const TextSpan(
-                                  text: 'By creating an account, you agree to our ',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                                  text:
+                                  'By creating an account, you agree to our ',
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey),
                                   children: [
                                     TextSpan(
                                       text: 'Terms and Conditions',
-                                      style: TextStyle(color: Color(0xFFFF7300)),
+                                      style: TextStyle(
+                                          color: Color(0xFFFF7300)),
                                     ),
                                   ],
                                 ),
@@ -215,16 +243,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // Submit
                         ElevatedButton(
                           onPressed: () {
-                            if (_formKey.currentState?.validate() == true && _agree) {
+                            if (_formKey.currentState?.validate() == true &&
+                                _agree) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Account Created Successfully")),
+                                const SnackBar(
+                                    content:
+                                    Text("Account Created Successfully")),
                               );
 
-                              // ✅ Navigate to login screen
                               Navigator.pushNamed(context, '/login');
                             } else if (!_agree) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Please agree to terms")),
+                                const SnackBar(
+                                    content:
+                                    Text("Please agree to terms")),
                               );
                             }
                           },
@@ -237,27 +269,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           child: const Text(
                             'Continue',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
+                            style:
+                            TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         ),
 
                         const SizedBox(height: 10),
-
-                        // Already have account
-                        // Already have account
                         Center(
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, '/login'); // Navigate to login screen
+                              Navigator.pushNamed(context, '/login');
                             },
                             child: RichText(
                               text: const TextSpan(
                                 text: 'Already have an account? ',
-                                style: TextStyle(fontSize: 14, color: Colors.grey),
+                                style:
+                                TextStyle(fontSize: 14, color: Colors.grey),
                                 children: [
                                   TextSpan(
                                     text: 'Login',
-                                    style: TextStyle(color: Color(0xFFFF7300), fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        color: Color(0xFFFF7300),
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
@@ -284,6 +317,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     bool isPassword = false,
     String? Function(String?)? validator,
     TextCapitalization textCapitalization = TextCapitalization.none,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -291,15 +325,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         controller: controller,
         obscureText: isPassword,
         keyboardType: keyboardType,
+        textCapitalization: textCapitalization,
         validator: validator,
-        autovalidateMode: AutovalidateMode.onUserInteraction, // ✅ Added here
+        inputFormatters: inputFormatters,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         decoration: InputDecoration(
           hintText: label,
           hintStyle: const TextStyle(color: Colors.grey),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          errorStyle: const TextStyle(color: Colors.red), // Optional
+          errorStyle: const TextStyle(color: Colors.red),
         ),
       ),
     );

@@ -3,51 +3,34 @@ import 'package:house_service/screens/cleaning_date_screen.dart';
 import 'package:house_service/screens/housify_home_screen.dart';
 import 'notification_screen.dart';
 
-void main() {
-  runApp(const CleaningServiceApp());
-}
-
-class CleaningServiceApp extends StatelessWidget {
-  const CleaningServiceApp({super.key});
+class  CleaningServiceApp extends StatefulWidget {
+  const  CleaningServiceApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: const Color(0xFF2ECC71),
-        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-        fontFamily: 'Roboto',
-      ),
-      home: const CleaningServiceScreen(),
-    );
-  }
+  State< CleaningServiceApp> createState() => _CleaningServiceScreenState();
 }
 
-class CleaningServiceScreen extends StatefulWidget {
-  const CleaningServiceScreen({super.key});
-
-  @override
-  State<CleaningServiceScreen> createState() => _CleaningServiceScreenState();
-}
-
-class _CleaningServiceScreenState extends State<CleaningServiceScreen> {
+class _CleaningServiceScreenState extends State< CleaningServiceApp> {
   int requiredPersons = 0;
   int workingHours = 2;
-  String selectedRoom = '2 Bedrooms\n1 Kitchen'; // default selected room
+  String? selectedRoom;
+
+  final List<Map<String, dynamic>> rooms = [
+    {'name': '2 Bedrooms\n1 Kitchen', 'icon': Icons.home},
+    {'name': '3 Bedrooms\n1 Kitchen', 'icon': Icons.house},
+    {'name': '4 Bedrooms\n1 Kitchen', 'icon': Icons.apartment},
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        children: [
-          // ✅ Custom AppBar
-          SafeArea(
-            child: Container(
-              height: 56,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ✅ Custom AppBar
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -65,340 +48,255 @@ class _CleaningServiceScreenState extends State<CleaningServiceScreen> {
                   ),
                   const Text(
                     'Cleaning Service',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
-                  Stack(
-                    children: [
-                      const Icon(Icons.notifications,
-                          color: Colors.white, size: 20),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          width: 6,
-                          height: 6,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  const Icon(Icons.notifications,
+                      color: Colors.white, size: 24),
                 ],
               ),
             ),
-          ),
 
-          // ✅ White rounded container body
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
+            // ✅ White rounded container content
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                  BorderRadius.vertical(top: Radius.circular(20)),
                 ),
-              ),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.only(bottom: 80),
+                child: Stack(
+                  children: [
+                    // ✅ Scrollable content
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Header
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: const [
-                                    Icon(Icons.cleaning_services,
-                                        color: Color(0xFF2ECC71), size: 24),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'Cleaning',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
+                          // 🔥 Header
+                          Row(
+                            children: [
+                              const Icon(Icons.cleaning_services,
+                                  color: Color(0xFF2ECC71), size: 32),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Cleaning',
+                                style: TextStyle(
+                                    fontSize: 28, fontWeight: FontWeight.bold),
+                              ),
+                              const Spacer(),
+                              OutlinedButton(
+                                onPressed: () {},
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFF2ECC71),
+                                  side: const BorderSide(
+                                      color: Color(0xFF2ECC71)),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
                                 ),
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFFE6F7EC),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                  ),
-                                  child: const Text(
-                                    '+ Custom',
-                                    style: TextStyle(
-                                      color: Color(0xFF2ECC71),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                                child: const Text('+ Custom'),
+                              ),
+                            ],
                           ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Select your rooms and workers correctly to measure estimated cost.',
+                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                          ),
+                          const SizedBox(height: 16),
 
-                          // ✅ Scrollable Promo Banners
-                          SizedBox(
-                            height: 140,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 16),
+                          // 🔥 Promo Banners
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
                               children: [
-                                _buildPromoBanner(
+                                _promoCard(
                                   title: "Shifty",
-                                  subtitle: "Hot Deal",
                                   discount: "40% OFF",
                                   description: "On First Cleaning Service",
-                                  imageUrl: "https://via.placeholder.com/140",
-                                  bgColor: const Color(0xFF2ECC71),
+                                  color: const Color(0xFF2ECC71),
                                 ),
                                 const SizedBox(width: 12),
-                                _buildPromoBanner(
+                                _promoCard(
                                   title: "Summer Offer",
-                                  subtitle: "Special Discount",
                                   discount: "30% OFF",
-                                  description: "On Deep Cleaning Service",
-                                  imageUrl: "https://via.placeholder.com/140",
-                                  bgColor: Colors.orange,
+                                  description: "On Deep Cleaning",
+                                  color: Colors.orange,
                                 ),
                               ],
                             ),
                           ),
-
                           const SizedBox(height: 24),
 
-                          // ✅ Fixed Room Selection
-                          Padding(
-                            padding:
-                            const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: _buildRoomCard(
-                                      '2 Bedrooms\n1 Kitchen',
-                                      const Color(0xFFE6F7EC)),
+                          // 🔥 Room Selection (Equal Containers)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: rooms.map((room) {
+                              bool isSelected = selectedRoom == room['name'];
+                              return Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedRoom = room['name'];
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? const Color(0xFF2ECC71)
+                                          .withOpacity(0.1)
+                                          : Colors.grey[100],
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? const Color(0xFF2ECC71)
+                                            : Colors.transparent,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(room['icon'],
+                                            size: 36, color: Colors.grey[600]),
+                                        const SizedBox(height: 6),
+                                        Text(room['name'],
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14)),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _buildRoomCard(
-                                      '3 Bedrooms\n1 Kitchen',
-                                      const Color(0xFFE6E6FA)),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _buildRoomCard(
-                                      '4 Bedrooms\n1 Kitchen',
-                                      const Color(0xFFFFF5E6)),
-                                ),
-                              ],
-                            ),
+                              );
+                            }).toList(),
                           ),
-
                           const SizedBox(height: 24),
 
-                          // ✅ Counters
-                          Padding(
-                            padding:
-                            const EdgeInsets.symmetric(horizontal: 16),
-                            child: Column(
-                              children: [
-                                _buildCounterRow(
-                                  icon: Icons.person,
-                                  title: 'Required Person',
-                                  subtitle:
-                                  'Regular cost is \$5/hr. Total cost will be calculated later',
-                                  value: requiredPersons,
-                                  onDecrement: () {
-                                    if (requiredPersons > 0) {
-                                      setState(() => requiredPersons--);
-                                    }
-                                  },
-                                  onIncrement: () {
-                                    setState(() => requiredPersons++);
-                                  },
-                                ),
-                                const SizedBox(height: 16),
-                                _buildCounterRow(
-                                  icon: Icons.access_time,
-                                  title: 'Working Hour',
-                                  subtitle:
-                                  'Cost will increase after 2 hrs of work.',
-                                  value: workingHours,
-                                  onDecrement: () {
-                                    if (workingHours > 0) {
-                                      setState(() => workingHours--);
-                                    }
-                                  },
-                                  onIncrement: () {
-                                    setState(() => workingHours++);
-                                  },
-                                ),
-                              ],
-                            ),
+                          // 🔥 Counters
+                          _buildCounterRow(
+                            icon: Icons.person,
+                            title: 'Required Person',
+                            subtitle:
+                            'Regular cost is \$5/hr. Total cost will be calculated later',
+                            value: requiredPersons,
+                            onDecrement: () {
+                              if (requiredPersons > 0) {
+                                setState(() => requiredPersons--);
+                              }
+                            },
+                            onIncrement: () {
+                              setState(() => requiredPersons++);
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          _buildCounterRow(
+                            icon: Icons.access_time,
+                            title: 'Working Hour',
+                            subtitle:
+                            'Cost will increase after 2 hrs of work.',
+                            value: workingHours,
+                            onDecrement: () {
+                              if (workingHours > 0) {
+                                setState(() => workingHours--);
+                              }
+                            },
+                            onIncrement: () {
+                              setState(() => workingHours++);
+                            },
                           ),
                         ],
                       ),
                     ),
-                  ),
 
-                  // ✅ Proceed Button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CleaningDateServiceScreen(
-                                selectedRoom: selectedRoom,
-                                requiredPersons: requiredPersons,
-                                workingHours: workingHours,
-                              ),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2ECC71),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                    // ✅ Proceed Button
+                    Positioned(
+                      bottom: 16,
+                      left: 16,
+                      right: 16,
+                      child: SizedBox(
+                        height: 56,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (selectedRoom != null &&
+                                requiredPersons > 0 &&
+                                workingHours > 0) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      CleaningDateServiceScreen(
+                                        selectedRoom: selectedRoom!,
+                                        requiredPersons: requiredPersons,
+                                        workingHours: workingHours,
+                                      ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Please select a room, person and hours.')),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2ECC71),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
                           ),
-                        ),
-                        child: const Text(
-                          'Proceed',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          child: const Text(
+                            'Proceed',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ✅ Promo Banner Widget
-  Widget _buildPromoBanner({
-    required String title,
-    required String subtitle,
-    required String discount,
-    required String description,
-    required String imageUrl,
-    required Color bgColor,
-  }) {
-    return Container(
-      width: 280,
-      height: 140,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        color: bgColor,
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(title,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Text(subtitle,
-                      style:
-                      const TextStyle(color: Colors.white, fontSize: 12)),
-                  Text(discount,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold)),
-                  Text(description,
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: 14)),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            width: 120,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(24),
-                bottomRight: Radius.circular(24),
-              ),
-              image: DecorationImage(
-                image: NetworkImage(imageUrl),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ✅ Room Card
-  Widget _buildRoomCard(String text, Color bgColor) {
-    return GestureDetector(
-      onTap: () => setState(() => selectedRoom = text),
-      child: Container(
-        height: 100,
-        decoration: BoxDecoration(
-          color: selectedRoom == text ? Colors.green.shade100 : bgColor,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: const [
-            BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
           ],
         ),
-        padding: const EdgeInsets.all(12),
-        child: Center(
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-        ),
+      ),
+    );
+  }
+
+  // ✅ Promo Card
+  Widget _promoCard({
+    required String title,
+    required String discount,
+    required String description,
+    required Color color,
+  }) {
+    return Container(
+      width: 220,
+      margin: const EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: const TextStyle(color: Colors.white, fontSize: 16)),
+          const SizedBox(height: 8),
+          Text(discount,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold)),
+          Text(description,
+              style: const TextStyle(color: Colors.white, fontSize: 14)),
+        ],
       ),
     );
   }
@@ -413,25 +311,20 @@ class _CleaningServiceScreenState extends State<CleaningServiceScreen> {
     required VoidCallback onIncrement,
   }) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        CircleAvatar(
+          backgroundColor: const Color(0xFF2ECC71).withOpacity(0.2),
+          child: Icon(icon, color: const Color(0xFF2ECC71)),
+        ),
+        const SizedBox(width: 8),
         Expanded(
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, color: Colors.green),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    Text(subtitle,
-                        style:
-                        const TextStyle(fontSize: 12, color: Colors.grey)),
-                  ],
-                ),
-              ),
+              Text(title,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(subtitle,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
         ),
@@ -439,12 +332,14 @@ class _CleaningServiceScreenState extends State<CleaningServiceScreen> {
           children: [
             IconButton(
                 onPressed: onDecrement,
-                icon: const Icon(Icons.remove, color: Colors.green)),
+                icon: const Icon(Icons.remove_circle_outline,
+                    color: Colors.green)),
             Text('$value',
                 style: const TextStyle(fontWeight: FontWeight.bold)),
             IconButton(
                 onPressed: onIncrement,
-                icon: const Icon(Icons.add, color: Colors.green)),
+                icon:
+                const Icon(Icons.add_circle_outline, color: Colors.green)),
           ],
         ),
       ],

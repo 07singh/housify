@@ -59,6 +59,8 @@ flutter:
     - assets/truck.png
     - assets/img.png
     - assets/img_1.png
+    - assets/home.png
+    - assets/cleaner.png
 
   fonts:
     - family: Roboto

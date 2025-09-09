@@ -12,6 +12,7 @@ class LocationScreen extends StatefulWidget {
     required this.selectedDate,
     required this.selectedTimePeriod,
     required this.selectedTime,
+
     required this.includeInstruments,
   }) : super(key: key);
 
@@ -29,7 +30,7 @@ class _LocationScreenState extends State<LocationScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>  ConfirmationScreen(
+        builder: (context) => ConfirmationScreen(
           location: selectedLocation,
           bedrooms: bedrooms,
           kitchens: kitchens,
@@ -83,6 +84,7 @@ class _LocationScreenState extends State<LocationScreen> {
         ),
         child: Column(
           children: [
+            // Room & Persons
             Padding(
               padding: EdgeInsets.all(width * 0.04),
               child: Card(
@@ -99,12 +101,17 @@ class _LocationScreenState extends State<LocationScreen> {
                     children: [
                       Icon(Icons.person, color: Colors.green, size: width * 0.07),
                       SizedBox(width: width * 0.01),
-                      Text('$persons Person', style: TextStyle(fontSize: width * 0.04)),
+                      Text(
+                        '$persons Person',
+                        style: TextStyle(fontSize: width * 0.04),
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
+
+            // Location Preview
             Expanded(
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: width * 0.04),
@@ -117,6 +124,8 @@ class _LocationScreenState extends State<LocationScreen> {
                 ),
               ),
             ),
+
+            // Selected Location
             Padding(
               padding: EdgeInsets.all(width * 0.04),
               child: Card(
@@ -124,18 +133,27 @@ class _LocationScreenState extends State<LocationScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
                   leading: Icon(Icons.location_on, color: Colors.green, size: width * 0.07),
-                  title: Text(selectedLocation, style: TextStyle(fontSize: width * 0.04)),
-                  trailing: IconButton(
+                  title: Text(
+                    selectedLocation.isNotEmpty
+                        ? selectedLocation
+                        : 'No location selected',
+                    style: TextStyle(fontSize: width * 0.04),
+                  ),
+                  trailing: selectedLocation.isNotEmpty
+                      ? IconButton(
                     icon: Icon(Icons.close, size: width * 0.06, color: Colors.grey),
                     onPressed: () {
                       setState(() {
                         selectedLocation = '';
                       });
                     },
-                  ),
+                  )
+                      : null,
                 ),
               ),
             ),
+
+            // Quick Select Buttons
             Padding(
               padding: EdgeInsets.all(width * 0.04),
               child: Row(
@@ -147,15 +165,18 @@ class _LocationScreenState extends State<LocationScreen> {
                 ],
               ),
             ),
+
+            // Proceed Button
             Padding(
               padding: EdgeInsets.fromLTRB(width * 0.04, 0, width * 0.04, height * 0.03),
               child: SizedBox(
                 width: double.infinity,
                 height: height * 0.06,
                 child: ElevatedButton(
-                  onPressed: _navigateToConfirmation,
+                  onPressed: selectedLocation.isNotEmpty ? _navigateToConfirmation : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
+                    disabledBackgroundColor: Colors.grey,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: Text(
@@ -177,7 +198,15 @@ class _LocationScreenState extends State<LocationScreen> {
 
   Widget _buildCircleButton(IconData icon, double width) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        if (icon == Icons.home) {
+          setState(() => selectedLocation = '3229 Joyce St, CA, USA');
+        } else if (icon == Icons.work) {
+          setState(() => selectedLocation = '124 Office Park, NY, USA');
+        } else {
+          setState(() => selectedLocation = 'Custom Location Added');
+        }
+      },
       style: ElevatedButton.styleFrom(
         shape: const CircleBorder(),
         padding: EdgeInsets.all(width * 0.05),

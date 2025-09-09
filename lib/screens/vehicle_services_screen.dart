@@ -2,23 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'notification_screen.dart';
 
-
-void main() {
-  runApp(const VehicleServiceApp());
-}
-
-class VehicleServiceApp extends StatelessWidget {
-  const VehicleServiceApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: VehicleServiceScreen(),
-    );
-  }
-}
-
 // ---------------- VEHICLE SERVICE SCREEN ----------------
 class VehicleServiceScreen extends StatelessWidget {
   const VehicleServiceScreen({super.key});
@@ -575,6 +558,8 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
   }
 }
 
+
+
 class LoadingPointScreen extends StatelessWidget {
   const LoadingPointScreen({super.key});
 
@@ -584,166 +569,192 @@ class LoadingPointScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          "Loading Point",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold, // ✅ Same style as confirmation
-          ),
-        ),
-        centerTitle: true,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.notifications_none, color: Colors.white),
-          ),
-        ],
-      ),
-      body: Container(
-        width: size.width,
-        height: size.height,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
-        ),
-        child: Stack(
+      body: SafeArea(
+        child: Column(
           children: [
-            // --- Map background ---
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.grey.shade200,
-              child: Center(
-                child: Icon(
-                  Icons.map,
-                  size: 200,
-                  color: Colors.grey.shade400,
-                ),
+            // ✅ Custom AppBar
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.arrow_back,
+                        color: Colors.white, size: 24),
+                  ),
+                  const Text(
+                    'Loading Point',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                  const Icon(Icons.notifications_none,
+                      color: Colors.white, size: 24),
+                ],
               ),
             ),
 
-            // --- Orange pin ---
-            const Positioned(
-              left: 160,
-              top: 280,
-              child: CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.white,
-                child: Icon(Icons.location_pin,
-                    size: 42, color: Colors.orange),
-              ),
-            ),
-
-            // --- GPS button ---
-            Positioned(
-              right: 20,
-              bottom: 280,
-              child: CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.white,
-                child: Icon(Icons.gps_fixed, color: Colors.black87),
-              ),
-            ),
-
-            // --- Bottom white panel ---
-            Align(
-              alignment: Alignment.bottomCenter,
+            // ✅ White rounded main container
+            Expanded(
               child: Container(
-                padding: const EdgeInsets.all(20),
-                height: size.height * 0.35,
+                width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
+                  borderRadius:
+                  BorderRadius.vertical(top: Radius.circular(30)),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Stack(
                   children: [
-                    // --- Selected Address ---
-                    Row(
-                      children: const [
-                        Icon(Icons.location_on, color: Colors.green),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "3329 Joyce Street",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 30),
-
-                    // --- Quick Locations ---
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: const [
-                        _QuickLocation(
-                          icon: Icons.home,
-                          label: "Home",
-                          color: Colors.orange,
-                        ),
-                        _QuickLocation(
-                          icon: Icons.work,
-                          label: "Work",
-                          color: Colors.black87,
-                        ),
-                        _QuickLocation(
-                          icon: Icons.add_location_alt,
-                          label: "Add New",
-                          color: Colors.black87,
-                        ),
-                      ],
-                    ),
-
-                    const Spacer(),
-
-                    // --- Confirm Button ---
-                    SizedBox(
+                    // --- Map background ---
+                    Container(
                       width: double.infinity,
-                      height: 55,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                      height: double.infinity,
+                      color: Colors.grey.shade200,
+                      child: Center(
+                        child: Icon(
+                          Icons.map,
+                          size: 200,
+                          color: Colors.grey.shade400,
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                              const OrderDetailsScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Confirm",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    // --- Orange pin ---
+                    const Positioned(
+                      left: 160,
+                      top: 200,
+                      child: CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.white,
+                        child: Icon(Icons.location_pin,
+                            size: 42, color: Colors.orange),
+                      ),
+                    ),
+
+                    // --- GPS button ---
+                    Positioned(
+                      right: 20,
+                      bottom: size.height * 0.3,
+                      child: CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Colors.white,
+                        child: const Icon(Icons.gps_fixed,
+                            color: Colors.black87),
+                      ),
+                    ),
+
+                    // --- Bottom white panel ---
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        height: size.height * 0.35,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                                offset: Offset(0, -2))
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // --- Selected Address ---
+                            Row(
+                              children: const [
+                                Icon(Icons.location_on, color: Colors.green),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    "3329 Joyce Street",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Divider(height: 30),
+
+                            // --- Quick Locations ---
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: const [
+                                _QuickLocation(
+                                  icon: Icons.home,
+                                  label: "Home",
+                                  color: Colors.orange,
+                                ),
+                                _QuickLocation(
+                                  icon: Icons.work,
+                                  label: "Work",
+                                  color: Colors.black87,
+                                ),
+                                _QuickLocation(
+                                  icon: Icons.add_location_alt,
+                                  label: "Add New",
+                                  color: Colors.black87,
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+
+      // ✅ Fixed Bottom Button (Cleaning style)
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, -2),
             )
           ],
+        ),
+        child: SizedBox(
+          height: 56,
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const OrderDetailsScreen(),
+                ),
+              );
+            },
+            child: const Text(
+              "Confirm",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+          ),
         ),
       ),
     );
@@ -779,6 +790,7 @@ class _QuickLocation extends StatelessWidget {
     );
   }
 }
+
 
 
 
