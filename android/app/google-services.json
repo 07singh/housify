@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "744261415592",
+    "project_id": "housify-520b9",
+    "storage_bucket": "housify-520b9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:744261415592:android:63c363f562e544aa1d889d",
+        "android_client_info": {
+          "package_name": "com.mobiloitte.house_service"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-9h2lKvOhDe7FLHbOofMtnNiFJrHZLTM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

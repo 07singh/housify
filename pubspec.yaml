@@ -1,0 +1,72 @@
+name: house_service
+description: A new Flutter project for a cleaning service app.
+
+# Prevent accidental publishing to pub.dev
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # For international phone number input field
+  intl_phone_field: ^3.2.0
+  # For formatting dates and numbers
+  intl: ^0.19.0
+  # For iOS-style icons
+  cupertino_icons: ^1.0.8
+  # For country selection picker
+  country_picker: ^2.0.26
+  # For Google Maps integration
+  google_maps_flutter: ^2.9.0
+  # For responsiveness
+  flutter_screenutil: ^5.9.3
+  image_picker: ^1.0.4
+  flutter_map: ^5.0.0
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # For linting and code analysis
+  flutter_lints: ^5.0.0
+  google_fonts: ^6.2.1
+  http: ^1.2.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/plant.png
+    - assets/t.png
+    - assets/e.png
+    - assets/us.png
+    - assets/map.png
+    - assets/goggle_logo.png
+    - assets/app_icon.png
+    - assets/housify_logo.png
+    - assets/sample_image.png
+    - assets/gifticon.png
+    - assets/notifiacton.png
+    - assets/facebook.png
+    - assets/goggle.png
+    - assets/twitter.png
+    - assets/naksha.png
+    - assets/cleaninggirl.png
+    - assets/truck.png
+    - assets/img.png
+    - assets/img_1.png
+
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/poppins-SemiBold.ttf
+        - asset: assets/Poppins-Regular.ttf
+        - asset: assets/Poppins-Medium.ttf
+        - asset: assets/Poppins-Bold.ttf
+        - asset: assets/Roboto-Italic-VariableFont_wdth,wght.ttf
+        - asset: assets/Roboto-VariableFont_wdth,wght.ttf
+          weight: 700
