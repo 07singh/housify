@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import'notification_screen.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -9,8 +9,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: LocationScreen(
+    return MaterialApp(
+      home: const LocationScreen(
         selectedDate: null,
         selectedSession: "",
         selectedTime: "",
@@ -20,6 +20,9 @@ class MyApp extends StatelessWidget {
         requiredPersons: 0,
       ),
       debugShowCheckedModeBanner: false,
+      routes: {
+        '/notification': (context) => const NotificationScreen(),
+      },
     );
   }
 }
@@ -111,7 +114,7 @@ Required Persons: ${widget.requiredPersons}
       body: SafeArea(
         child: Column(
           children: [
-            // Custom AppBar like Office Shifting
+            // Custom AppBar (same style as before)
             Container(
               padding: EdgeInsets.symmetric(horizontal: width * 0.04),
               height: height * 0.08,
@@ -119,10 +122,12 @@ Required Persons: ${widget.requiredPersons}
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Back button
                   IconButton(
                     icon: Icon(Icons.arrow_back, color: Colors.white, size: width * 0.06),
                     onPressed: () => Navigator.pop(context),
                   ),
+                  // Title
                   Text(
                     'Location',
                     style: TextStyle(
@@ -131,18 +136,22 @@ Required Persons: ${widget.requiredPersons}
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  // Notification bell
                   IconButton(
                     icon: Icon(Icons.notifications, color: Colors.white, size: width * 0.06),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/notification');
+                    },
                   ),
                 ],
               ),
             ),
+
             // Main Body
             Expanded(
               child: Container(
                 width: double.infinity,
-                color: Colors.white, // <-- Main body white
+                color: Colors.white,
                 padding: EdgeInsets.all(width * 0.04),
                 child: Column(
                   children: [
@@ -210,7 +219,7 @@ Required Persons: ${widget.requiredPersons}
                       ),
                     SizedBox(height: height * 0.03),
 
-                    // Location Type Buttons like Office Shifting
+                    // Location Type Buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -249,7 +258,7 @@ Required Persons: ${widget.requiredPersons}
                           ),
                         ),
                         child: Text(
-                          'proceed',
+                          'Proceed',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -310,3 +319,5 @@ class _CircleButton extends StatelessWidget {
     );
   }
 }
+
+

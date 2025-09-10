@@ -192,11 +192,7 @@ class _CleaningDateServiceScreenState extends State<CleaningDateServiceScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Selected Room: ${widget.selectedRoom}",
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
-                        Text("Required Persons: ${widget.requiredPersons}"),
-                        Text("Working Hours: ${widget.workingHours}"),
-                        const SizedBox(height: 20),
+                        // ✅ Removed Selected Room, Persons, Hours
 
                         _buildCalendar(),
                         const SizedBox(height: 20),

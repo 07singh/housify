@@ -12,10 +12,8 @@ class VehicleServiceScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFF1C2526),
-
       body: Column(
         children: [
-          // ✅ AppBar like HistoryScreen
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -1303,14 +1301,6 @@ class OrderConfirmationScreen extends StatelessWidget {
 }
 
 
-class Message {
-  final String text;
-  final String time;
-  final bool isSender;
-
-  Message({required this.text, required this.time, required this.isSender});
-}
-
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -1335,7 +1325,7 @@ class _ChatScreenState extends State<ChatScreen> {
     ),
     Message(
       text:
-      "Please come 30min early\nif you can, as I need some\nthings to load, and I need your help",
+      "Please come 30min early if you can, as I need some things to load, and I need your help.",
       time: "08:22 AM",
       isSender: true,
     ),
@@ -1393,42 +1383,51 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         child: Column(
           children: [
-            // ✅ Driver Info
+// ✅ Driver Info
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Row(
                 children: [
+                  // ✅ Profile Image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(25),
                     child: Image.asset(
                       "assets/driver.png",
-                      width:23,
-                      height: 23,
+                      width: 40, // proper size
+                      height: 40,
                       fit: BoxFit.cover,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        "Gabriel Payne",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.black,
+
+                  // ✅ Driver Name + Status
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          "Gabriel Payne",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis, // ✅ move here
                         ),
-                      ),
-                      Text(
-                        "Online",
-                        style: TextStyle(
+                        Text(
+                          "Online",
+                          style: TextStyle(
                             color: Colors.green,
                             fontSize: 14,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    ],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const Spacer(),
+
+                  // ✅ Call Button
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.orange.withOpacity(0.15),
@@ -1442,6 +1441,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
 
             const Divider(height: 1),
+
 
             // ✅ Chat List
             Expanded(
@@ -1460,6 +1460,10 @@ class _ChatScreenState extends State<ChatScreen> {
                           : CrossAxisAlignment.start,
                       children: [
                         Container(
+                          constraints: BoxConstraints(
+                            maxWidth:
+                            MediaQuery.of(context).size.width * 0.7, // ✅ wrap like WhatsApp
+                          ),
                           padding: const EdgeInsets.all(12),
                           margin: const EdgeInsets.only(bottom: 5, top: 5),
                           decoration: BoxDecoration(
@@ -1470,6 +1474,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           child: Text(
                             msg.text,
+                            softWrap: true, // ✅ wrap to next line
+                            overflow: TextOverflow.visible, // ✅ no ellipsis
                             style: TextStyle(
                               color: msg.isSender
                                   ? Colors.white
@@ -1535,7 +1541,18 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
+// ✅ Message Model
+class Message {
+  final String text;
+  final String time;
+  final bool isSender;
 
+  Message({
+    required this.text,
+    required this.time,
+    required this.isSender,
+  });
+}
 class ReviewScreen extends StatefulWidget {
   const ReviewScreen({super.key});
 

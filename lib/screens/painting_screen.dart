@@ -44,7 +44,7 @@ class _PaintingServiceScreenState extends State<PaintingServiceScreen> {
                   ),
                   const Text(
                     'Painting Service',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    style: TextStyle(color: Colors.white, fontSize: 18, ),
                   ),
                   const Icon(Icons.notifications, color: Colors.white, size: 24),
                 ],

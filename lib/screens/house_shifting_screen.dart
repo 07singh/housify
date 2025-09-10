@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:house_service/screens/sehudule_shifting_screen.dart';
+import 'package:house_service/screens/notification_screen.dart';
 
 class HouseShiftingScreen extends StatefulWidget {
   const HouseShiftingScreen({Key? key}) : super(key: key);
@@ -10,10 +11,9 @@ class HouseShiftingScreen extends StatefulWidget {
 
 class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
   final List<Map<String, dynamic>> houseSizes = [
-    {"title": "2BHK", "subtitle": "2 Bedrooms 1 Kitchen", "icon": Icons.home},
-    {"title": "3BHK", "subtitle": "3 Bedrooms 1 Kitchen", "icon": Icons.home_filled},
-    {"title": "4BHK", "subtitle": "4 Bedrooms 1 Kitchen", "icon": Icons.house},
-    {"title": "Custom", "subtitle": "Choose yourself", "icon": Icons.add_home},
+    {"title": "2BHK", "subtitle": "2 Bed 1 Kitchen", "icon": Icons.home},
+    {"title": "3BHK", "subtitle": "3 Bed 1 Kitchen", "icon": Icons.home_filled},
+    {"title": "4BHK", "subtitle": "4 Bed 1 Kitchen", "icon": Icons.house},
   ];
 
   String? selectedHouse;
@@ -44,6 +44,9 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
 
   int packedBoxes = 0;
 
+  int get totalFurnitureCount =>
+      furnitures.values.fold(0, (sum, count) => sum + count);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,8 +54,16 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _Header(onBack: () => Navigator.pop(context)),
-
+            _Header(
+              onBack: () => Navigator.pop(context),
+              onNotification: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationScreen()),
+                );
+              },
+            ),
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -65,6 +76,8 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                       padding: const EdgeInsets.all(20),
                       children: [
                         const SizedBox(height: 10),
+
+                        // House Size Section
                         const Text("House Size",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
@@ -75,33 +88,47 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                         ),
                         const SizedBox(height: 12),
 
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: houseSizes.map((house) {
-                              int index = houseSizes.indexOf(house);
-                              return Row(
-                                children: [
-                                  _houseSizeCard(
-                                    title: house["title"],
-                                    subtitle: house["subtitle"],
-                                    icon: house["icon"],
-                                    selected: selectedHouse == house["title"],
-                                    onTap: () =>
-                                        setState(() => selectedHouse = house["title"]),
-                                  ),
-                                  if (index != houseSizes.length - 1)
-                                    const SizedBox(width: 12),
-                                ],
-                              );
-                            }).toList(),
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: houseSizes.map((house) {
+                            return _houseSizeCard(
+                              title: house["title"],
+                              subtitle: house["subtitle"],
+                              icon: house["icon"],
+                              selected: selectedHouse == house["title"],
+                              onTap: () =>
+                                  setState(() => selectedHouse = house["title"]),
+                            );
+                          }).toList(),
                         ),
-                        const SizedBox(height: 20),
 
-                        const Text("Furnitures",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 16),
+                        Divider(color: Colors.grey.shade300, thickness: 1),
+                        const SizedBox(height: 16),
+
+                        // Furnitures Section with Count
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Furnitures",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold)),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.orange,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                "$totalFurnitureCount Selected",
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 4),
                         const Text(
                           "Approximate furnitures",
@@ -127,17 +154,23 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
-                                          color: Colors.grey.shade300, width: 1),
+                                          color: Colors.grey.shade300,
+                                          width: 1),
                                     ),
                                     child: Center(
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
                                         children: [
-                                          Icon(furnitureIcons[item] ?? Icons.category,
-                                              color: Colors.orange, size: 26),
+                                          Icon(
+                                              furnitureIcons[item] ??
+                                                  Icons.category,
+                                              color: Colors.orange,
+                                              size: 26),
                                           const SizedBox(height: 6),
                                           Text(item,
-                                              style: const TextStyle(fontSize: 13)),
+                                              style: const TextStyle(
+                                                  fontSize: 13)),
                                         ],
                                       ),
                                     ),
@@ -148,7 +181,8 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                                       backgroundColor: Colors.orange,
                                       child: Text("$count",
                                           style: const TextStyle(
-                                              fontSize: 12, color: Colors.white)),
+                                              fontSize: 12,
+                                              color: Colors.white)),
                                     ),
                                 ],
                               ),
@@ -156,7 +190,11 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                           }).toList(),
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
+                        Divider(color: Colors.grey.shade300, thickness: 1),
+                        const SizedBox(height: 16),
+
+                        // Packed Boxes Section
                         const Text("Packed Boxes",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
@@ -198,7 +236,9 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                                         color: Colors.black54),
                                     onPressed: () => setState(() =>
                                     packedBoxes =
-                                    packedBoxes > 0 ? packedBoxes - 1 : 0),
+                                    packedBoxes > 0
+                                        ? packedBoxes - 1
+                                        : 0),
                                   ),
                                   Text("$packedBoxes",
                                       style: const TextStyle(
@@ -221,6 +261,7 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                       ],
                     ),
 
+                    // Proceed Button
                     Positioned(
                       bottom: 0,
                       left: 0,
@@ -240,16 +281,29 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                               elevation: 0,
                             ),
                             onPressed: () {
+                              if (selectedHouse == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "Please select a house size")),
+                                );
+                                return;
+                              }
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                    const ScheduleShiftingScreen()),
+                                  builder: (context) =>
+                                      ScheduleShiftingScreen(
+                                        selectedHouse: selectedHouse!,
+                                        furnitures: Map.from(furnitures),
+                                        packedBoxes: packedBoxes,
+                                      ),
+                                ),
                               );
                             },
                             child: const Text("Proceed",
-                                style:
-                                TextStyle(color: Colors.white, fontSize: 18)),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 18)),
                           ),
                         ),
                       ),
@@ -264,7 +318,9 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
     );
   }
 
-  Widget _Header({required VoidCallback onBack}) {
+  Widget _Header(
+      {required VoidCallback onBack,
+        required VoidCallback onNotification}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
       color: Colors.black,
@@ -272,26 +328,30 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-              onTap: onBack, child: const Icon(Icons.arrow_back, color: Colors.white)),
+              onTap: onBack,
+              child: const Icon(Icons.arrow_back, color: Colors.white)),
           const Text(
             "House Shifting Service",
             style: TextStyle(
                 fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          Stack(
-            children: [
-              const Icon(Icons.notifications, color: Colors.white),
-              Positioned(
-                right: 0,
-                top: 0,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration:
-                  const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+          GestureDetector(
+            onTap: onNotification,
+            child: Stack(
+              children: [
+                const Icon(Icons.notifications, color: Colors.white),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                        color: Colors.red, shape: BoxShape.circle),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -311,8 +371,8 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 180),
-            width: 90,
-            height: 90,
+            width: 85,
+            height: 85,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
@@ -322,19 +382,21 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
             ),
             child: Stack(
               children: [
-                Center(child: Icon(icon, size: 36, color: Colors.black54)),
+                Center(child: Icon(icon, size: 32, color: Colors.black54)),
                 if (selected)
                   const Positioned(
                     right: 6,
                     top: 6,
-                    child: Icon(Icons.check_circle, color: Colors.orange, size: 20),
+                    child: Icon(Icons.check_circle,
+                        color: Colors.orange, size: 18),
                   ),
               ],
             ),
           ),
           const SizedBox(height: 6),
           Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+          Text(subtitle,
+              style: const TextStyle(color: Colors.grey, fontSize: 11)),
         ],
       ),
     );

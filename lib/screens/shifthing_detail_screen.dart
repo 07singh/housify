@@ -1,51 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'select_destation_screen.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ShiftingDetailsScreen(),
-    );
-  }
-}
-
 class ShiftingDetailsScreen extends StatefulWidget {
+  final String selectedHouse;
+  final Map<String, int> furnitures;
+  final int packedBoxes;
+  final DateTime selectedDate;
+  final String selectedTime;
+  final int workers;
+  final int electricians;
+
+  const ShiftingDetailsScreen({
+    Key? key,
+    required this.selectedHouse,
+    required this.furnitures,
+    required this.packedBoxes,
+    required this.selectedDate,
+    required this.selectedTime,
+    required this.workers,
+    required this.electricians,
+  }) : super(key: key);
+
   @override
   _ShiftingDetailsScreenState createState() => _ShiftingDetailsScreenState();
 }
 
 class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
   String selectedVehicle = 'Mini Truck';
+  GoogleMapController? _mapController;
+
+  static const LatLng _initialLocation = LatLng(28.6139, 77.2090); // Delhi
+  final Set<Marker> _markers = {};
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Background outside main content
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
           children: [
-            // ✅ AppBar like Office Shifting
+            // ✅ Custom AppBar
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               color: Colors.black,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.arrow_back, color: Colors.white)),
-                  const Text(
-                    'Friday, May 11, 2025\n8:00 pm',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.arrow_back, color: Colors.white),
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        _formatDate(widget.selectedDate),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        widget.selectedTime,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                   Stack(
                     children: [
@@ -54,10 +77,12 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
                         right: 0,
                         top: 0,
                         child: Container(
-                          width: 10,
-                          height: 10,
+                          width: 8,
+                          height: 8,
                           decoration: const BoxDecoration(
-                              color: Colors.red, shape: BoxShape.circle),
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
                         ),
                       ),
                     ],
@@ -66,125 +91,192 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
               ),
             ),
 
-            // ✅ Main white content
+            // ✅ White Content Section
             Expanded(
               child: Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(20)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
-                child: Column(
+                child: Stack(
                   children: [
-                    // Info Cards
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildCategoryChip('2 Bedrooms\n1 Kitchen', Icons.home),
-                          _buildCategoryChip('12 Furniture', Icons.chair),
-                          _buildCategoryChip('10 Boxes', Icons.inventory),
-                        ],
+                    // ✅ Map as background
+                    Positioned.fill(
+                      child: ClipRRect(
+                        borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(20)),
+                        child: GoogleMap(
+                          initialCameraPosition: const CameraPosition(
+                            target: _initialLocation,
+                            zoom: 13,
+                          ),
+                          onMapCreated: (controller) {
+                            _mapController = controller;
+                          },
+                          markers: _markers,
+                          myLocationEnabled: true,
+                          myLocationButtonEnabled: false,
+                          onTap: (position) {
+                            setState(() {
+                              _markers.clear();
+                              _markers.add(
+                                Marker(
+                                  markerId: const MarkerId("pickup"),
+                                  position: position,
+                                ),
+                              );
+                            });
+                          },
+                        ),
                       ),
                     ),
 
-                    // Map Placeholder or Image
-                    Expanded(
-                      child: Stack(
-                        children: [
-                          Image.asset(
-                            'assets/map.png', // Replace with actual map
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            top: 50,
-                            left: 0,
-                            right: 0,
-                            child: Center(
-                              child: Icon(Icons.location_on,
-                                  color: Colors.yellow, size: 40),
+                    // ✅ Floating Info Chips
+                    Positioned(
+                      top: 12,
+                      left: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
                             ),
-                          ),
-                          Positioned(
-                            bottom: 150,
-                            left: 20,
-                            right: 20,
-                            child: Column(
-                              children: [
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildChip(Icons.home, widget.selectedHouse),
+                            _buildChip(Icons.chair,
+                                '${widget.furnitures.length} Furniture'),
+                            _buildChip(Icons.inventory,
+                                '${widget.packedBoxes} Boxes'),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // ✅ Bottom Section with addresses + vehicles + button
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(30)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10,
+                              offset: Offset(0, -2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Pickup & Drop
+                            Column(
+                              children: const [
                                 Row(
                                   children: [
-                                    Icon(Icons.circle,
-                                        color: Colors.black, size: 10),
-                                    SizedBox(width: 5),
+                                    Icon(Icons.circle, size: 12, color: Colors.black),
+                                    SizedBox(width: 8),
                                     Expanded(
-                                        child: Text(
-                                            '2045 Lodgeville Road, Eagan...')),
+                                      child: Text("2045 Lodgeville Road, Eagan"),
+                                    ),
                                   ],
                                 ),
-                                SizedBox(height: 10),
+                                Divider(),
                                 Row(
                                   children: [
                                     Icon(Icons.location_on,
-                                        color: Colors.green, size: 20),
-                                    SizedBox(width: 5),
+                                        size: 16, color: Colors.green),
+                                    SizedBox(width: 8),
                                     Expanded(
-                                        child: Text('3329 Joyce Street')),
+                                      child: Text("3329 Joyce Street"),
+                                    ),
                                   ],
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
+                            const SizedBox(height: 16),
 
-                    // Vehicle Options
-                    Padding(
-                      padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      child: Row(
-                        children: [
-                          _buildVehicleOption(
-                              'Mini Truck', '<1.8 Ton', 'assets/mini_truck.png'),
-                          _buildVehicleOption(
-                              'Pickup', '~1.2 Ton', 'assets/mini_truck.png'),
-                          _buildVehicleOption(
-                              'Large', '~5 Ton', 'assets/mini_truck.png'),
-                        ],
-                      ),
-                    ),
+                            // Vehicles horizontal
+                            SizedBox(
+                              height: 120,
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  _buildVehicleCard(
+                                    'Mini Truck',
+                                    '~1.8 Ton',
+                                    'assets/truck.png',
+                                  ),
+                                  _buildVehicleCard(
+                                    'Pickup',
+                                    '~1.2 Ton',
+                                    'assets/truck.png',
+                                  ),
+                                  _buildVehicleCard(
+                                    'Large',
+                                    '~5 Ton',
+                                    'assets/truck.png',
+                                  ),
+                                ],
+                              ),
+                            ),
 
-                    // ✅ Proceed Button
-                    Padding(
-                      padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SelectDestinationScreen()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                          ),
-                          child: const Text(
-                            'Proceed',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16),
-                          ),
+                            const SizedBox(height: 12),
+
+                            // Proceed button
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          SelectDestinationScreen(
+                                            selectedHouse: widget.selectedHouse,
+                                            furnitures: widget.furnitures,
+                                            packedBoxes: widget.packedBoxes,
+                                            workers: widget.workers,
+                                            electricians: widget.electricians,
+                                            selectedDate: widget.selectedDate,
+                                            selectedTime: widget.selectedTime,
+                                            selectedVehicle: selectedVehicle,
+                                          ),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.orange,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Proceed',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -198,41 +290,49 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
     );
   }
 
-  // --- Widgets ---
-  Widget _buildCategoryChip(String label, IconData icon) {
-    return Chip(
-      avatar: Icon(icon, color: Colors.white),
-      label: Text(label, style: TextStyle(color: Colors.white)),
-      backgroundColor: Colors.grey[700],
+  // --- Helpers ---
+  String _formatDate(DateTime date) {
+    return "${date.day}-${date.month}-${date.year}";
+  }
+
+  Widget _buildChip(IconData icon, String label) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.orange, size: 18),
+        const SizedBox(width: 6),
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+      ],
     );
   }
 
-  Widget _buildVehicleOption(String title, String capacity, String imagePath) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            selectedVehicle = title;
-          });
-        },
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 5),
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade200, // Always light grey
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildVehicleCard(String title, String capacity, String imagePath) {
+    final isSelected = selectedVehicle == title;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedVehicle = title;
+        });
+      },
+      child: Container(
+        width: 120,
+        margin: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.orange.shade50 : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(
+            color: isSelected ? Colors.orange : Colors.grey.shade300,
+            width: 2,
           ),
-          child: Column(
-            children: [
-              Image.asset(
-                imagePath,
-                height: 80,
-              ),
-              const SizedBox(height: 10),
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(capacity),
-            ],
-          ),
+        ),
+        child: Column(
+          children: [
+            Image.asset(imagePath, height: 50),
+            const SizedBox(height: 8),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(capacity,
+                style: const TextStyle(fontSize: 12, color: Colors.black54)),
+          ],
         ),
       ),
     );

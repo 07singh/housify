@@ -14,13 +14,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   String selectedCountryFlag = '🇮🇳';
   String selectedCountryShortCode = 'IND';
   String phoneNumber = '';
-  bool showCountryDropdown = false;
   final TextEditingController _phoneController = TextEditingController();
 
   int maxPhoneLength = 10; // Default India
-  String? phoneError; // 👈 validation error text
+  String? phoneError;
 
-  // 🔹 Helper function: get max length from example number
   int getMaxLengthForCountry(Country country) {
     final digitsOnly = country.example.replaceAll(RegExp(r'\D'), '');
     return digitsOnly.length;
@@ -31,68 +29,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       selectedCountryCode = '+${country.phoneCode}';
       selectedCountryFlag = country.flagEmoji;
       selectedCountryShortCode = country.countryCode.toUpperCase();
-
-      // Dynamic max length
       maxPhoneLength = getMaxLengthForCountry(country);
-
-      showCountryDropdown = false;
       _phoneController.clear();
       phoneNumber = '';
       phoneError = null;
     });
   }
 
-  // 🔹 Phone validation (Production Level)
   String? validatePhone(String value) {
-    if (value.isEmpty) {
-      return "Phone number is required";
-    }
-    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-      return "Only digits are allowed";
-    }
+    if (value.isEmpty) return "Phone number is required";
+    if (!RegExp(r'^[0-9]+$').hasMatch(value)) return "Only digits are allowed";
     if (value.length < 7 || value.length > 15) {
       return "Enter a valid phone number (7-15 digits)";
     }
-
-    // ❌ All zeros
     if (RegExp(r'^0+$').hasMatch(value)) {
       return "Invalid phone number (all zeros not allowed)";
     }
-
-    // ❌ 4+ repeating same digit (including zero)
     if (RegExp(r'(\d)\1{3,}').hasMatch(value)) {
       return "Invalid phone number (digit repeated too many times)";
     }
-
-    return null; // ✅ Valid
-  }
-
-  Widget _buildCountryDropdown() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      height: 250,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          )
-        ],
-      ),
-      child: ListView(
-        children: CountryService().getAll().map((country) {
-          return ListTile(
-            leading: Text(country.flagEmoji),
-            title: Text(country.name),
-            trailing: Text('+${country.phoneCode}'),
-            onTap: () => _selectCountry(country),
-          );
-        }).toList(),
-      ),
-    );
+    return null;
   }
 
   @override
@@ -140,86 +96,95 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   SizedBox(height: size.height * 0.03),
 
-                  // Country selector and phone input
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            showCountryDropdown = !showCountryDropdown;
-                          });
-                        },
-                        child: Container(
-                          height: 55,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(12),
-                            ),
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Colors.grey.shade300,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Text(
-                                selectedCountryFlag,
-                                style: const TextStyle(fontSize: 24),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                '$selectedCountryShortCode ($selectedCountryCode)',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const Spacer(),
-                              const Icon(Icons.arrow_drop_down),
-                            ],
-                          ),
-                        ),
+                  // Country selector + phone input
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: phoneError != null
+                            ? Colors.red
+                            : Colors.grey.shade300,
                       ),
-                      if (showCountryDropdown) _buildCountryDropdown(),
-
-                      // Phone number input
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF7F7F7),
-                          borderRadius: const BorderRadius.vertical(
-                            bottom: Radius.circular(12),
-                          ),
-                          border: Border.all(
-                            color: phoneError != null
-                                ? Colors.red
-                                : Colors.transparent,
-                          ),
-                        ),
-                        child: TextField(
-                          controller: _phoneController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Phone number',
-                            counterText: '',
-                            errorText: phoneError, // 👈 instant error show
-                          ),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          style: const TextStyle(fontSize: 18),
-                          maxLength: maxPhoneLength,
-                          onChanged: (value) {
-                            setState(() {
-                              phoneNumber = value;
-                              phoneError = validatePhone(value);
-                            });
+                    ),
+                    child: Column(
+                      children: [
+                        // Country box
+                        GestureDetector(
+                          onTap: () {
+                            showCountryPicker(
+                              context: context,
+                              showPhoneCode: true,
+                              showSearch: true,
+                              countryListTheme: CountryListThemeData(
+                                borderRadius: BorderRadius.circular(16),
+                                inputDecoration: InputDecoration(
+                                  labelText: 'Search',
+                                  hintText: 'Search by country name or code',
+                                  prefixIcon: const Icon(Icons.search),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                              onSelect: _selectCountry,
+                            );
                           },
+                          child: Container(
+                            height: 55,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                Text(
+                                  selectedCountryFlag,
+                                  style: const TextStyle(fontSize: 24),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '$selectedCountryShortCode ($selectedCountryCode)',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                const Spacer(),
+                                const Icon(Icons.arrow_drop_down),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+
+                        // Grey line between
+                        Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Colors.grey.shade300,
+                        ),
+
+                        // Phone number input
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: TextField(
+                            controller: _phoneController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Phone number',
+                              counterText: '',
+                              errorText: phoneError,
+                            ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            style: const TextStyle(fontSize: 18),
+                            maxLength: maxPhoneLength,
+                            onChanged: (value) {
+                              setState(() {
+                                phoneNumber = value;
+                                phoneError = validatePhone(value);
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   SizedBox(height: size.height * 0.02),

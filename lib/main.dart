@@ -9,8 +9,6 @@ import 'screens/reset_email_screen.dart';
 import 'screens/set_new_password_screen.dart';
 import 'screens/housify_home_screen.dart';
 
-
-
 void main() {
   runApp(const HouseServiceApp());
 }

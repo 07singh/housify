@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'notification_screen.dart';
 
-
-
 class OfficeShiftingScreen extends StatefulWidget {
   const OfficeShiftingScreen({super.key});
 
@@ -18,6 +16,32 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
 
   List<String> selectedItems = [];
 
+  void _toggleItem(String item) {
+    setState(() {
+      if (selectedItems.contains(item)) {
+        selectedItems.remove(item);
+      } else {
+        selectedItems.add(item);
+      }
+    });
+  }
+
+  void _proceed() {
+    if (selectedOfficeSize == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select office size")),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+            "Proceeding with $selectedOfficeSize, Items: ${selectedItems.length}, Workers: $workers, Boxes: $packedBoxes, Electricians: $electricians"),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +49,7 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
+            // 🔹 Header
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
               color: Colors.black,
@@ -45,55 +69,61 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => const NotificationScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const NotificationScreen()),
+                      );
                     },
-                    child: const Icon(Icons.notifications, color: Colors.white),
+                    child:
+                    const Icon(Icons.notifications_none, color: Colors.white),
                   ),
                 ],
               ),
             ),
 
-            // Main Content
+            // 🔹 Main Content
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                  BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30)),
                 ),
                 child: Stack(
                   children: [
                     ListView(
                       padding: const EdgeInsets.all(20),
                       children: [
-                        // Office Size Section
+                        // Office Size
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
                               'Office Size',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             OutlinedButton(
                               onPressed: () {},
                               style: OutlinedButton.styleFrom(
                                 side: const BorderSide(color: Colors.orange),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
                               ),
-                              child: const Text('+ Custom', style: TextStyle(color: Colors.orange)),
+                              child: const Text('+ Custom',
+                                  style: TextStyle(color: Colors.orange)),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        // ✅ Niche Description Line
+                        const SizedBox(height: 10),
                         const Text(
                           'Select your office rooms to help us calculate the shifting cost accurately.',
                           style: TextStyle(color: Colors.grey, fontSize: 14),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 14),
 
-                        // Office Size Choices
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -102,21 +132,24 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
                               subtitle: '2 or less rooms',
                               color: Colors.lightBlue[100]!,
                               selected: selectedOfficeSize == 'Small Office',
-                              onTap: () => setState(() => selectedOfficeSize = 'Small Office'),
+                              onTap: () =>
+                                  setState(() => selectedOfficeSize = 'Small Office'),
                             ),
                             _officeSizeCard(
                               title: 'Large Office',
                               subtitle: '3 rooms',
                               color: Colors.yellow[100]!,
                               selected: selectedOfficeSize == 'Large Office',
-                              onTap: () => setState(() => selectedOfficeSize = 'Large Office'),
+                              onTap: () =>
+                                  setState(() => selectedOfficeSize = 'Large Office'),
                             ),
                             _officeSizeCard(
                               title: 'Multiple Office',
-                              subtitle: '4 or more rooms',
+                              subtitle: '4+ rooms',
                               color: Colors.pink[100]!,
                               selected: selectedOfficeSize == 'Multiple Office',
-                              onTap: () => setState(() => selectedOfficeSize = 'Multiple Office'),
+                              onTap: () => setState(
+                                      () => selectedOfficeSize = 'Multiple Office'),
                             ),
                           ],
                         ),
@@ -124,13 +157,14 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
                         const SizedBox(height: 20),
                         const Divider(color: Colors.grey),
 
-                        // Office Items Section
+                        // Office Items
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
                               'Office Items',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             Text('${selectedItems.length} Selected',
                                 style: const TextStyle(color: Colors.grey)),
@@ -177,18 +211,16 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
                         const SizedBox(height: 20),
                         const Divider(color: Colors.grey),
 
-                        // Packed Boxes Counter
+                        // Counters
                         _counterRow(
                           icon: Icons.inventory,
                           title: 'Packed Boxes',
                           subtitle: 'Weight below 10Kg',
                           count: packedBoxes,
                           onAdd: () => setState(() => packedBoxes++),
-                          onRemove: () =>
-                              setState(() => packedBoxes = packedBoxes > 0 ? packedBoxes - 1 : 0),
+                          onRemove: () => setState(() =>
+                          packedBoxes = packedBoxes > 0 ? packedBoxes - 1 : 0),
                         ),
-
-                        // Workers Counter
                         _counterRow(
                           icon: Icons.groups_2,
                           title: 'Workers',
@@ -198,40 +230,43 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
                           onRemove: () =>
                               setState(() => workers = workers > 0 ? workers - 1 : 0),
                         ),
-
-                        // Electricians Counter
                         _counterRow(
                           icon: Icons.flash_on,
                           title: 'Electricians',
                           subtitle: 'Regular cost is 10/hr',
                           count: electricians,
                           onAdd: () => setState(() => electricians++),
-                          onRemove: () =>
-                              setState(() => electricians = electricians > 0 ? electricians - 1 : 0),
+                          onRemove: () => setState(() =>
+                          electricians = electricians > 0 ? electricians - 1 : 0),
                         ),
 
                         const SizedBox(height: 100),
                       ],
                     ),
 
-                    // ✅ Proceed button
+                    // 🔹 Proceed button
                     Positioned(
                       bottom: 20,
                       left: 20,
                       right: 20,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                      child: SizedBox(
+                        height: 56,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: _proceed,
+                          child: const Text(
+                            'Proceed',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
-                        onPressed: () {
-                          // Your proceed logic
-                        },
-                        child: const Text('Proceed',
-                            style: TextStyle(color: Colors.white, fontSize: 18)),
                       ),
                     ),
                   ],
@@ -242,16 +277,6 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
         ),
       ),
     );
-  }
-
-  void _toggleItem(String item) {
-    setState(() {
-      if (selectedItems.contains(item)) {
-        selectedItems.remove(item);
-      } else {
-        selectedItems.add(item);
-      }
-    });
   }
 
   Widget _officeSizeCard({
@@ -272,13 +297,16 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(15),
-              border: selected ? Border.all(color: Colors.orange, width: 2) : null,
+              border: selected
+                  ? Border.all(color: Colors.orange, width: 2)
+                  : null,
               boxShadow: selected
                   ? [
                 BoxShadow(
-                    color: Colors.orange.withOpacity(0.25),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4))
+                  color: Colors.orange.withOpacity(0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
               ]
                   : null,
             ),
@@ -286,7 +314,8 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
           ),
           const SizedBox(height: 6),
           Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+          Text(subtitle,
+              style: const TextStyle(color: Colors.grey, fontSize: 12)),
         ],
       ),
     );
@@ -313,9 +342,11 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(subtitle,
                       style:
-                      const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                      const TextStyle(color: Colors.grey, fontSize: 12)),
                 ],
               ),
             ],
@@ -358,10 +389,14 @@ class _ItemChip extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: Center(
-          child: Text(title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white)),
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: Colors.white),
+          ),
         ),
       ),
     );

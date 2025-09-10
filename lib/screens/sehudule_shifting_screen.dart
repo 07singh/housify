@@ -1,25 +1,19 @@
 import 'shifthing_detail_screen.dart';
+import 'notification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const ScheduleShiftingScreen(),
-    );
-  }
-}
-
 class ScheduleShiftingScreen extends StatefulWidget {
-  const ScheduleShiftingScreen({super.key});
+  final String selectedHouse;
+  final Map<String, int> furnitures;
+  final int packedBoxes;
+
+  const ScheduleShiftingScreen({
+    super.key,
+    required this.selectedHouse,
+    required this.furnitures,
+    required this.packedBoxes,
+  });
 
   @override
   State<ScheduleShiftingScreen> createState() => _ScheduleShiftingScreenState();
@@ -31,8 +25,8 @@ class _ScheduleShiftingScreenState extends State<ScheduleShiftingScreen> {
   int selectedDay = 1;
   int selectedTime = -1;
 
-  DateTime currentMonth = DateTime(2025, 7);
-  final List<String> times = ["07:00 AM", "11:00 AM", "12:00 PM"];
+  DateTime currentMonth = DateTime.now();
+  final List<String> times = ["07:00AM", "11:00 AM", "12:00 PM"];
 
   int getDaysInMonth(DateTime date) {
     final firstDayThisMonth = DateTime(date.year, date.month, 1);
@@ -93,12 +87,15 @@ class _ScheduleShiftingScreenState extends State<ScheduleShiftingScreen> {
       ));
     }
 
+    int totalFurnitureCount =
+    widget.furnitures.values.fold(0, (sum, count) => sum + count);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF1C2526), // black background
+      backgroundColor: const Color(0xFF1C2526),
       body: SafeArea(
         child: Column(
           children: [
-            // ✅ AppBar like Cleaning Service
+            // ✅ Custom AppBar
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -112,45 +109,52 @@ class _ScheduleShiftingScreenState extends State<ScheduleShiftingScreen> {
                     style: TextStyle(
                         color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  Stack(
-                    children: [
-                      const Icon(Icons.notifications, color: Colors.white, size: 24),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          width: 10,
-                          height: 10,
-                          decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const NotificationScreen()),
+                      );
+                    },
+                    child: Stack(
+                      children: [
+                        const Icon(Icons.notifications, color: Colors.white, size: 24),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            width: 10,
+                            height: 10,
+                            decoration: const BoxDecoration(
+                                color: Colors.red, shape: BoxShape.circle),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
 
-            // ✅ White Container for content
+            // ✅ White Content Area
             Expanded(
               child: Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(20)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: Stack(
                   children: [
                     ListView(
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                       children: [
-                        // Info Cards
+                        // ✅ Info Cards Row (Dynamic)
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            infoCard(Icons.home, "2 Bedrooms\n1 Kitchen"),
-                            infoCard(Icons.chair, "12 Furniture"),
-                            infoCard(Icons.inventory_2, "10 Boxes"),
+                            infoCard(Icons.home, widget.selectedHouse),
+                            infoCard(Icons.chair, "$totalFurnitureCount Furniture"),
+                            infoCard(Icons.inventory_2, "${widget.packedBoxes} Boxes"),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -178,7 +182,7 @@ class _ScheduleShiftingScreenState extends State<ScheduleShiftingScreen> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Calendar Grid
+                        // Calendar Days Row
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: const [
@@ -192,6 +196,7 @@ class _ScheduleShiftingScreenState extends State<ScheduleShiftingScreen> {
                           ],
                         ),
                         const SizedBox(height: 10),
+
                         GridView.count(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -245,7 +250,9 @@ class _ScheduleShiftingScreenState extends State<ScheduleShiftingScreen> {
                           subtitle: "Regular cost is \$5/hr. Total cost will be calculated later",
                           value: workers,
                           onAdd: () => setState(() => workers++),
-                          onRemove: () => setState(() { if (workers > 0) workers--; }),
+                          onRemove: () => setState(() {
+                            if (workers > 0) workers--;
+                          }),
                         ),
                         workerCard(
                           icon: Icons.flash_on,
@@ -253,27 +260,54 @@ class _ScheduleShiftingScreenState extends State<ScheduleShiftingScreen> {
                           subtitle: "Regular cost is \$10/hr. Total cost will be calculated later",
                           value: electricians,
                           onAdd: () => setState(() => electricians++),
-                          onRemove: () => setState(() { if (electricians > 0) electricians--; }),
+                          onRemove: () => setState(() {
+                            if (electricians > 0) electricians--;
+                          }),
                         ),
 
                         const SizedBox(height: 120),
                       ],
                     ),
 
-                    // ✅ Bottom Proceed Button - Full Width like House Shifting
+                    // ✅ Bottom Proceed Button
                     Positioned(
                       bottom: 16,
                       left: 16,
                       right: 16,
                       child: SizedBox(
                         width: double.infinity,
-                        height: 56, // same height as HouseShifting button
+                        height: 56,
                         child: ElevatedButton(
                           onPressed: () {
+                            if (selectedTime == -1) {
+                              // ⚠️ Agar time select nahi hua
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Please select a time slot before proceeding."),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return; // Stop navigation
+                            }
+
+                            DateTime selectedDate = DateTime(
+                              currentMonth.year,
+                              currentMonth.month,
+                              selectedDay,
+                            );
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ShiftingDetailsScreen(),
+                                builder: (context) => ShiftingDetailsScreen(
+                                  selectedHouse: widget.selectedHouse,
+                                  furnitures: widget.furnitures,
+                                  packedBoxes: widget.packedBoxes,
+                                  workers: workers,
+                                  electricians: electricians,
+                                  selectedDate: selectedDate,
+                                  selectedTime: times[selectedTime], // ✅ Correct slot pass
+                                ),
                               ),
                             );
                           },
@@ -287,13 +321,15 @@ class _ScheduleShiftingScreenState extends State<ScheduleShiftingScreen> {
                           child: const Text(
                             "Proceed",
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
                       ),
                     ),
+
                   ],
                 ),
               ),
@@ -308,19 +344,21 @@ class _ScheduleShiftingScreenState extends State<ScheduleShiftingScreen> {
   Widget infoCard(IconData icon, String text) {
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, color: Colors.orange, size: 22),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             Flexible(
               child: Text(
                 text,
+                softWrap: true, // ✅ Prevent overflow
                 style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
               ),
             ),

@@ -28,7 +28,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController zipController =
   TextEditingController(text: "18109");
   final TextEditingController passwordController =
-  TextEditingController(text: "123456");
+  TextEditingController(text: "Test@123");
 
   String selectedState = "Pennsylvania";
   Country selectedCountry = Country(
@@ -46,10 +46,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   File? _profileImage;
 
-  Future<void> _pickImage() async {
+  /// ================== IMAGE PICK + REMOVE ==================
+  Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile =
-    await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    await picker.pickImage(source: source, imageQuality: 80);
 
     if (pickedFile != null) {
       setState(() {
@@ -58,13 +59,174 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  void _showImageOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text("Take Photo"),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text("Choose from Gallery"),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await _pickImage(ImageSource.gallery);
+              },
+            ),
+            if (_profileImage != null)
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text("Remove Photo"),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  setState(() {
+                    _profileImage = null;
+                  });
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// ================== VALIDATORS ==================
+  String? _validateName(String? value) {
+    if (value == null || value.trim().isEmpty) return "Name is required";
+    if (!RegExp(r"^[A-Z][a-zA-Z\s]{1,49}$").hasMatch(value.trim())) {
+      return "Name must start with capital & only letters (max 50 chars)";
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.trim().isEmpty) return "Email is required";
+    if (!RegExp(
+        r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+        .hasMatch(value.trim())) {
+      return "Enter a valid email";
+    }
+    return null;
+  }
+
+// ================= PHONE VALIDATOR =================
+  String? _validatePhone(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Phone number is required";
+    }
+
+    final phone = value.trim();
+    final code = selectedCountry.countryCode;
+
+    // ❌ Repeated digit check (111111, 9999999999, etc.)
+    if (RegExp(r'^(\d)\1{5,}$').hasMatch(phone)) {
+      return "Phone number cannot have repeated digits only";
+    }
+
+    // ✅ Country-specific validation
+    if (code == "IN") {
+      if (!RegExp(r'^[6-9]\d{9}$').hasMatch(phone)) {
+        return "Enter valid 10-digit Indian number";
+      }
+      if (phone.length != 10) return "Indian number must be 10 digits";
+    } else if (code == "US") {
+      if (!RegExp(r'^\d{10}$').hasMatch(phone)) {
+        return "Enter valid 10-digit US number";
+      }
+      if (phone.length != 10) return "US number must be 10 digits";
+    } else if (code == "GB") {
+      if (!RegExp(r'^\d{10,11}$').hasMatch(phone)) {
+        return "Enter valid UK number (10–11 digits)";
+      }
+    } else {
+      if (!RegExp(r'^\d{6,15}$').hasMatch(phone)) {
+        return "Enter valid phone number (6–15 digits)";
+      }
+    }
+
+    return null;
+  }
+
+// ================= ADDRESS VALIDATOR =================
+  String? _validateAddress(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Address is required";
+    }
+    if (value.trim().length < 5) {
+      return "Address must be at least 5 characters";
+    }
+    return null;
+  }
+
+// ================= ZIP VALIDATOR =================
+  String? _validateZip(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "ZIP/Postal Code is required";
+    }
+
+    final zip = value.trim();
+    final code = selectedCountry.countryCode;
+
+    // ❌ Prevent only repeated characters (111111, 000000, AAAA)
+    if (RegExp(r'^(\w)\1{2,}$').hasMatch(zip)) {
+      return "ZIP/Postal Code cannot have only repeated characters";
+    }
+
+    if (code == "US") {
+      if (!RegExp(r'^\d{5}(-\d{4})?$').hasMatch(zip)) {
+        return "Enter valid US ZIP (e.g. 12345 or 12345-6789)";
+      }
+    } else if (code == "IN") {
+      if (!RegExp(r'^\d{6}$').hasMatch(zip)) {
+        return "Enter valid 6-digit Indian PIN code";
+      }
+    } else if (code == "GB") {
+      if (!RegExp(r'^[A-Za-z0-9\s]{5,8}$').hasMatch(zip)) {
+        return "Enter valid UK postal code";
+      }
+    } else {
+      if (!RegExp(r'^[A-Za-z0-9\s-]{3,12}$').hasMatch(zip)) {
+        return "Enter valid postal code";
+      }
+    }
+
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) return "Password is required";
+    if (value.length < 8) return "Min 8 characters required";
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return "Must contain at least 1 uppercase letter";
+    }
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return "Must contain at least 1 lowercase letter";
+    }
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return "Must contain at least 1 number";
+    }
+    if (!RegExp(r'[!@#\$&*~]').hasMatch(value)) {
+      return "Must contain at least 1 special character";
+    }
+    return null;
+  }
+
+  /// ================== UI ==================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1C2526),
       body: Column(
         children: [
-          // Custom AppBar
+          /// ✅ Custom AppBar
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -113,7 +275,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
 
-          // White rounded container
+          /// ✅ White rounded container
           Expanded(
             child: Container(
               width: double.infinity,
@@ -128,7 +290,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     children: [
-                      // Profile Image - Updated (no remove option)
+                      /// ✅ Profile Image
                       Center(
                         child: Stack(
                           alignment: Alignment.center,
@@ -155,8 +317,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             Positioned(
                               bottom: 0,
+                              right: 0,
                               child: InkWell(
-                                onTap: _pickImage,
+                                onTap: _showImageOptions,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: const BoxDecoration(
@@ -173,115 +336,62 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Form Fields
-                      _buildTextField(
-                        "Full Name",
-                        nameController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Name is required";
-                          }
-                          if (!RegExp(r"^[A-Z][a-zA-Z\s]+$")
-                              .hasMatch(value)) {
-                            return "Start with capital & only alphabets";
-                          }
-                          return null;
-                        },
-                      ),
-                      _buildTextField(
-                        "Email Address",
-                        emailController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Email is required";
-                          }
-                          if (!RegExp(r"^[\w\.-]+@[\w\.-]+\.\w+$")
-                              .hasMatch(value)) {
-                            return "Enter a valid email";
-                          }
-                          return null;
-                        },
-                      ),
+                      /// ✅ Fields with validators
+                      _buildTextField("Full Name", nameController,
+                          validator: _validateName),
+                      _buildTextField("Email Address", emailController,
+                          validator: _validateEmail),
                       _buildPhoneField(),
-                      _buildTextField(
-                        "Current Address",
-                        addressController,
-                        validator: (value) =>
-                        value == null || value.isEmpty
-                            ? "Address is required"
-                            : null,
-                      ),
+                      _buildTextField("Current Address", addressController,
+                          validator: _validateAddress),
                       const SizedBox(height: 12),
-
                       Row(
                         children: [
                           Expanded(
-                            child: _buildTextField(
-                              "Zip Code",
-                              zipController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Zip Code is required";
-                                }
-                                if (!RegExp(r"^\d+$").hasMatch(value)) {
-                                  return "Only numbers allowed";
-                                }
-                                return null;
-                              },
-                            ),
+                            child: _buildTextField("ZIP Code", zipController,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                validator: _validateZip),
                           ),
                           const SizedBox(width: 12),
                           Expanded(child: _buildStateDropdown()),
                         ],
                       ),
-
-                      _buildTextField(
-                        "Password",
-                        passwordController,
-                        obscure: true,
-                        validator: (value) => value == null || value.isEmpty
-                            ? "Password is required"
-                            : null,
-                      ),
+                      _buildTextField("Password", passwordController,
+                          obscure: true, validator: _validatePassword),
 
                       const SizedBox(height: 16),
 
-                      // Change Password
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const ChangePasswordScreen()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.black12),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text("Change Password",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 8),
-                            Image.asset("assets/app_icon.png",
-                                height: 18, width: 18),
-                          ],
+                      /// ✅ Change Password Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) =>
+                                  const ChangePasswordScreen()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            side: const BorderSide(color: Colors.black12),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: const Text("Change Password",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold)),
                         ),
                       ),
 
                       const SizedBox(height: 16),
 
-                      // Save Button
+                      /// ✅ Save Button
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
@@ -317,7 +427,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  // Reusable Widgets
+  /// ================== Reusable Widgets ==================
   Widget _buildTextField(String label, TextEditingController controller,
       {String? Function(String?)? validator,
         bool obscure = false,
@@ -352,19 +462,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: TextFormField(
         controller: phoneController,
         keyboardType: TextInputType.number,
+        validator: _validatePhone,
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(10)
+          LengthLimitingTextInputFormatter(15)
         ],
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return "Phone number is required";
-          }
-          if (value.length != 10) {
-            return "Phone number must be 10 digits";
-          }
-          return null;
-        },
         decoration: InputDecoration(
           prefixIcon: InkWell(
             onTap: () {

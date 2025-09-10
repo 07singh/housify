@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
 import 'shifting_order_screen.dart';
 
-
 class SelectDestinationScreen extends StatefulWidget {
+  final String selectedHouse;
+  final Map<String, int> furnitures;
+  final int packedBoxes;
+  final int workers;
+  final int electricians;
+  final DateTime selectedDate;
+  final String selectedTime;
+  final String selectedVehicle;
+
+  const SelectDestinationScreen({
+    super.key,
+    required this.selectedHouse,
+    required this.furnitures,
+    required this.packedBoxes,
+    required this.workers,
+    required this.electricians,
+    required this.selectedDate,
+    required this.selectedTime,
+    required this.selectedVehicle,
+  });
+
   @override
   _SelectDestinationScreenState createState() =>
       _SelectDestinationScreenState();
@@ -11,15 +31,13 @@ class SelectDestinationScreen extends StatefulWidget {
 class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          // ✅ AppBar like Office Shifting
+          // ✅ Custom AppBar
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             color: Colors.black,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,7 +71,7 @@ class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
             ),
           ),
 
-          // ✅ Main White Container
+          // ✅ White Section with Map
           Expanded(
             child: Container(
               width: double.infinity,
@@ -63,71 +81,81 @@ class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
               ),
               child: Stack(
                 children: [
-                  // Map inside white container
+                  // ✅ Full Map
                   Positioned.fill(
-                    top: 16,
-                    bottom: 100,
-                    left: 16,
-                    right: 16,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(30),
+                      ),
                       child: Image.asset(
-                        'assets/map.png', // replace with actual map
+                        'assets/map.png',
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
 
-                  // Source Address Box
+                  // ✅ Address box on top
                   Positioned(
-                    top: 24,
-                    left: 32,
-                    right: 32,
+                    top: 20,
+                    left: 24,
+                    right: 24,
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: Offset(0, 3),
+                          )
+                        ],
                       ),
                       child: Row(
                         children: const [
-                          Icon(Icons.circle, size: 10, color: Colors.black),
+                          Icon(Icons.circle, size: 12, color: Colors.black),
                           SizedBox(width: 8),
                           Expanded(
-                              child: Text(
-                                  '2045 Lodgeville Street, Eagan')),
+                              child:
+                              Text('2045 Lodgeville Street, Eagan')),
                         ],
                       ),
                     ),
                   ),
 
-                  // Destination Pin
+                  // ✅ Center Pin
+                  const Center(
+                    child: Icon(Icons.location_on,
+                        color: Colors.yellow, size: 50),
+                  ),
+
+                  // ✅ Current Location Icon (Bottom right)
                   Positioned(
-                    top: size.height * 0.25,
-                    left: 0,
-                    right: 0,
-                    child: const Center(
-                      child: Icon(Icons.location_on,
-                          color: Colors.yellow, size: 40),
+                    bottom: 100,
+                    right: 20,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 6,
+                          )
+                        ],
+                      ),
+                      child: const Icon(Icons.my_location,
+                          color: Colors.orange, size: 30),
                     ),
                   ),
 
-                  // Current Location Icon
-                  Positioned(
-                    bottom: 120,
-                    left: 0,
-                    right: 0,
-                    child: const Center(
-                      child:
-                      Icon(Icons.my_location, color: Colors.orange, size: 30),
-                    ),
-                  ),
-
-                  // ✅ Confirm Button
+                  // ✅ Confirm Button at bottom
                   Positioned(
                     bottom: 20,
-                    left: 16,
-                    right: 16,
+                    left: 20,
+                    right: 20,
                     child: SizedBox(
                       height: 56,
                       child: ElevatedButton(
@@ -135,13 +163,24 @@ class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => OrderDetailsScreen()),
+                              builder: (context) => OrderDetailsScreen(
+                                selectedHouse: widget.selectedHouse,
+                                furnitures: widget.furnitures,
+                                packedBoxes: widget.packedBoxes,
+                                workers: widget.workers,
+                                electricians: widget.electricians,
+                                selectedDate: widget.selectedDate,
+                                selectedTime: widget.selectedTime,
+                                selectedVehicle: widget.selectedVehicle,
+                              ),
+                            ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         child: const Text(
                           'Confirm',

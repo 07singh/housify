@@ -26,6 +26,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   image_picker: ^1.0.4
   flutter_map: ^5.0.0
+  
 
 
 dev_dependencies:

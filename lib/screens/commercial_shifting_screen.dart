@@ -58,7 +58,7 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
                     const SizedBox(height: 10),
                     const _NotesSection(),
 
-                    // 🔹 Divider only once between Industry Size section & Heavy Item
+                    // 🔹 Divider
                     const SizedBox(height: 20),
                     const Divider(color: Colors.grey, thickness: 0.5),
                     const SizedBox(height: 20),
@@ -108,20 +108,32 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
           ],
         ),
       ),
+
+      // ✅ Updated Button Style
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15),
         color: Colors.white,
-        child: ElevatedButton(
-          onPressed: () {
-            // Proceed ka logic yaha likho
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
-            minimumSize: const Size(double.infinity, 50),
-            shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: SizedBox(
+          height: 56,
+          child: ElevatedButton(
+            onPressed: () {
+              // Proceed ka logic yaha likho
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'Proceed',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
           ),
-          child: const Text('Proceed'),
         ),
       ),
     );
@@ -151,7 +163,13 @@ class _Header extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          const Icon(Icons.notifications, color: Colors.white),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => NotificationScreen()));
+            },
+            child: const Icon(Icons.notifications, color: Colors.white),
+          ),
         ],
       ),
     );
