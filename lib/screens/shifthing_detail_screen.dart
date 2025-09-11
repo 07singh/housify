@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'select_destation_screen.dart';
 
 class ShiftingDetailsScreen extends StatefulWidget {
@@ -28,10 +27,6 @@ class ShiftingDetailsScreen extends StatefulWidget {
 
 class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
   String selectedVehicle = 'Mini Truck';
-  GoogleMapController? _mapController;
-
-  static const LatLng _initialLocation = LatLng(28.6139, 77.2090); // Delhi
-  final Set<Marker> _markers = {};
 
   @override
   Widget build(BuildContext context) {
@@ -101,33 +96,14 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
                 ),
                 child: Stack(
                   children: [
-                    // ✅ Map as background
+                    // ✅ Replace Google Map with static map image
                     Positioned.fill(
                       child: ClipRRect(
                         borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(20)),
-                        child: GoogleMap(
-                          initialCameraPosition: const CameraPosition(
-                            target: _initialLocation,
-                            zoom: 13,
-                          ),
-                          onMapCreated: (controller) {
-                            _mapController = controller;
-                          },
-                          markers: _markers,
-                          myLocationEnabled: true,
-                          myLocationButtonEnabled: false,
-                          onTap: (position) {
-                            setState(() {
-                              _markers.clear();
-                              _markers.add(
-                                Marker(
-                                  markerId: const MarkerId("pickup"),
-                                  position: position,
-                                ),
-                              );
-                            });
-                          },
+                        child: Image.asset(
+                          "assets/map.png", // <-- apna static map image
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
@@ -188,7 +164,8 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
                               children: const [
                                 Row(
                                   children: [
-                                    Icon(Icons.circle, size: 12, color: Colors.black),
+                                    Icon(Icons.circle,
+                                        size: 12, color: Colors.black),
                                     SizedBox(width: 8),
                                     Expanded(
                                       child: Text("2045 Lodgeville Road, Eagan"),

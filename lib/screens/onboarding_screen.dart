@@ -107,20 +107,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Stack(
                         children: [
                           Positioned(
-                            top: 20,
-                            right: 20,
+                            top: 40,
+                            right: 30,
                             child: InkWell(
                               onTap: () {
                                 Navigator.pushReplacementNamed(
                                     context, '/welcome');
                               },
                               child: Container(
-                                width: 60,
+                                width: 55,
                                 height: 30,
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: const Text(
                                   'Skip',
@@ -175,7 +175,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           fontFamily: "Poppins",
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
-                          color: Colors.black,
+                          color: Colors.grey,
                           height: 1.5,
                         ),
                         textAlign: TextAlign.center,

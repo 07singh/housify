@@ -557,7 +557,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
 }
 
 
-
 class LoadingPointScreen extends StatelessWidget {
   const LoadingPointScreen({super.key});
 
@@ -566,166 +565,173 @@ class LoadingPointScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ✅ Custom AppBar
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+      backgroundColor: const Color(0xFF1C2526),
+      body: Column(
+        children: [
+          // ✅ Custom AppBar (Vehicle Service style)
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.arrow_back,
-                        color: Colors.white, size: 24),
+                  IconButton(
+                    icon:
+                    const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                  const Text(
-                    'Loading Point',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        'Loading Point',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
-                  const Icon(Icons.notifications_none,
-                      color: Colors.white, size: 24),
+                  IconButton(
+                    icon: const Icon(Icons.notifications_none,
+                        color: Colors.white, size: 26),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const NotificationScreen()),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
+          ),
 
-            // ✅ White rounded main container
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(30)),
-                ),
-                child: Stack(
-                  children: [
-                    // --- Map background ---
-                    Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      color: Colors.grey.shade200,
-                      child: Center(
-                        child: Icon(
-                          Icons.map,
-                          size: 200,
-                          color: Colors.grey.shade400,
+          // ✅ White rounded main container
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+              ),
+              child: Stack(
+                children: [
+                  // --- Map background (static placeholder) ---
+                  Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Colors.grey.shade200,
+                    child: Center(
+                      child: Icon(
+                        Icons.map,
+                        size: 200,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                  ),
+
+                  // --- Orange pin ---
+                  const Positioned(
+                    left: 160,
+                    top: 200,
+                    child: CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.location_pin,
+                          size: 42, color: Colors.orange),
+                    ),
+                  ),
+
+                  // --- GPS button ---
+                  Positioned(
+                    right: 20,
+                    bottom: size.height * 0.3,
+                    child: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Colors.white,
+                      child: const Icon(Icons.gps_fixed, color: Colors.black87),
+                    ),
+                  ),
+
+                  // --- Bottom white panel ---
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      height: size.height * 0.35,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, -2))
+                        ],
                       ),
-                    ),
-
-                    // --- Orange pin ---
-                    const Positioned(
-                      left: 160,
-                      top: 200,
-                      child: CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.white,
-                        child: Icon(Icons.location_pin,
-                            size: 42, color: Colors.orange),
-                      ),
-                    ),
-
-                    // --- GPS button ---
-                    Positioned(
-                      right: 20,
-                      bottom: size.height * 0.3,
-                      child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.white,
-                        child: const Icon(Icons.gps_fixed,
-                            color: Colors.black87),
-                      ),
-                    ),
-
-                    // --- Bottom white panel ---
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        height: size.height * 0.35,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30),
-                            topRight: Radius.circular(30),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, -2))
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // --- Selected Address ---
-                            Row(
-                              children: const [
-                                Icon(Icons.location_on, color: Colors.green),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    "3329 Joyce Street",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // --- Selected Address ---
+                          Row(
+                            children: const [
+                              Icon(Icons.location_on, color: Colors.green),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  "3329 Joyce Street",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ],
-                            ),
-                            const Divider(height: 30),
+                              ),
+                            ],
+                          ),
+                          const Divider(height: 30),
 
-                            // --- Quick Locations ---
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: const [
-                                _QuickLocation(
-                                  icon: Icons.home,
-                                  label: "Home",
-                                  color: Colors.orange,
-                                ),
-                                _QuickLocation(
-                                  icon: Icons.work,
-                                  label: "Work",
-                                  color: Colors.black87,
-                                ),
-                                _QuickLocation(
-                                  icon: Icons.add_location_alt,
-                                  label: "Add New",
-                                  color: Colors.black87,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                          // --- Quick Locations ---
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: const [
+                              _QuickLocation(
+                                icon: Icons.home,
+                                label: "Home",
+                                color: Colors.orange,
+                              ),
+                              _QuickLocation(
+                                icon: Icons.work,
+                                label: "Work",
+                                color: Colors.black87,
+                              ),
+                              _QuickLocation(
+                                icon: Icons.add_location_alt,
+                                label: "Add New",
+                                color: Colors.black87,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
 
-      // ✅ Fixed Bottom Button (Cleaning style)
+      // ✅ Fixed Bottom Button (Confirm)
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(16),
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 10,
-              offset: Offset(0, -2),
-            )
-          ],
         ),
         child: SizedBox(
           height: 56,
@@ -781,9 +787,11 @@ class _QuickLocation extends StatelessWidget {
           child: Icon(icon, color: color, size: 30),
         ),
         const SizedBox(height: 8),
-        Text(label,
-            style: const TextStyle(
-                fontWeight: FontWeight.w500, fontSize: 14)),
+        Text(
+          label,
+          style: const TextStyle(
+              fontWeight: FontWeight.w500, fontSize: 14),
+        ),
       ],
     );
   }
