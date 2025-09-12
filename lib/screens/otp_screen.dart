@@ -14,7 +14,7 @@ class OTPScreen extends StatefulWidget {
 class _OTPScreenState extends State<OTPScreen> {
   late List<TextEditingController> _otpControllers;
   late List<FocusNode> _focusNodes;
-  int _secondsRemaining = 30;
+  int _secondsRemaining = 50;
   Timer? _timer;
 
   bool _isOtpFilled() =>
@@ -86,7 +86,7 @@ class _OTPScreenState extends State<OTPScreen> {
           ),
           child: Column(
             children: [
-              const SizedBox(height: 40),
+              const SizedBox(height: 45),
 
               // 🔹 Title with Back Arrow
               Padding(
@@ -106,33 +106,33 @@ class _OTPScreenState extends State<OTPScreen> {
                           fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     const Spacer(),
-                    const SizedBox(width: 24),
+                    const SizedBox(width: 45),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 45),
 
               // 🔹 Instructions
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: 'An authentication code has been sent to\n',
-                  style: const TextStyle(color: Colors.grey, fontSize: 16),
+                  text: 'An Authentication code has been sent to\n',
+                  style: const TextStyle(color: Colors.grey, fontSize: 17),
                   children: [
                     TextSpan(
                       text: _formatPhoneWithCountryCode(widget.phoneNumber),
                       style: const TextStyle(
                         color: Color(0xFFFF7300),
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 17,
                       ),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 35),
 
               // 🔹 OTP Boxes
               Row(
@@ -141,8 +141,8 @@ class _OTPScreenState extends State<OTPScreen> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: SizedBox(
-                      width: 50,
-                      height: 50,
+                      width: 54,
+                      height: 65,
                       child: TextField(
                         controller: _otpControllers[index],
                         focusNode: _focusNodes[index],
@@ -196,12 +196,12 @@ class _OTPScreenState extends State<OTPScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 61,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF7300),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                     onPressed: () {
@@ -237,7 +237,7 @@ class _OTPScreenState extends State<OTPScreen> {
                           ? 'Resend Code in 00:${_secondsRemaining.toString().padLeft(2, '0')}'
                           : 'You can resend the code now',
                       style:
-                      const TextStyle(color: Color(0xFFFF7300)),
+                      const TextStyle(color: Color(0xFFA19E9E)),
                     ),
                   ],
                 ),

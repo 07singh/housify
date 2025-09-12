@@ -14,6 +14,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
   bool _rememberMe = false;
+  bool _isPasswordEntered = false; // ✅ Track password input
+
+  @override
+  void initState() {
+    super.initState();
+    passwordController.addListener(() {
+      setState(() {
+        _isPasswordEntered = passwordController.text.isNotEmpty;
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -22,33 +33,31 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // ✅ Email validation (production-level)
+  // ✅ Email validation
   String? _validateEmail(String? val) {
     val = val?.trim();
     if (val == null || val.isEmpty) {
       return 'Enter email';
     }
-    // Industry standard regex for email
     if (!RegExp(
         r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
         .hasMatch(val)) {
       return 'Invalid email';
     }
-    return null; // ✅ No error if valid
+    return null;
   }
 
-  // ✅ Password validation (production-level)
+  // ✅ Password validation
   String? _validatePassword(String? val) {
     if (val == null || val.isEmpty) {
       return 'Enter password';
     }
-    // At least 8 chars, one upper, one lower, one digit, one special char
     if (!RegExp(
         r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}$')
         .hasMatch(val)) {
       return 'Invalid password (8+ chars, upper, lower, number, special)';
     }
-    return null; // ✅ No error if valid
+    return null;
   }
 
   @override
@@ -65,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 60),
+              const SizedBox(height: 65),
 
               // ✅ Heading Section
               Padding(
@@ -76,16 +85,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       'Let\'s Sign You In',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 40,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 70),
                     Text(
                       'Welcome back,\n you\'ve been missed!',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 25,
                         color: Colors.grey,
                       ),
                     ),
@@ -93,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 50),
 
               // ✅ Form area scrollable
               Expanded(
@@ -102,43 +111,62 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: SingleChildScrollView(
                     child: Form(
                       key: _formKey,
-                      autovalidateMode:
-                      AutovalidateMode.onUserInteraction, // ✅ live check
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       child: Column(
                         children: [
                           // Email
-                          TextFormField(
-                            controller: emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: _validateEmail,
-                            textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              hintText: 'Email Address',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          SizedBox(
+                            height: 70,
+                            child: TextFormField(
+                              controller: emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: _validateEmail,
+                              textInputAction: TextInputAction.next,
+                              decoration: InputDecoration(
+                                labelText: 'Email Address',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFFF7300),
+                                    width: 5,
+                                  ),
+                                ),
+                                errorStyle: const TextStyle(
+                                    color: Colors.red, fontSize: 12),
                               ),
-                              errorStyle: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 20),
 
                           // Password
-                          TextFormField(
-                            controller: passwordController,
-                            obscureText: true,
-                            validator: _validatePassword,
-                            textInputAction: TextInputAction.done,
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          SizedBox(
+                            height: 62,
+                            child: TextFormField(
+                              controller: passwordController,
+                              obscureText: true,
+                              validator: _validatePassword,
+                              textInputAction: TextInputAction.done,
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFFF7300),
+                                    width: 2,
+                                  ),
+                                ),
+                                errorStyle: const TextStyle(
+                                    color: Colors.red, fontSize: 12),
                               ),
-                              errorStyle: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 15),
 
                           // Remember Me + Forgot Password
                           Row(
@@ -172,25 +200,33 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 20),
 
-                          // Login Button
-                          ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState?.validate() ==
-                                  true) {
-                                Navigator.pushNamedAndRemoveUntil(
-                                    context, '/home', (route) => false);
+                          // Login Button (grey -> orange after password entered)
+                          SizedBox(
+                            height: 62,
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _isPasswordEntered
+                                  ? () {
+                                if (_formKey.currentState?.validate() ==
+                                    true) {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                      context, '/home',
+                                          (route) => false);
+                                }
                               }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFFF7300),
-                              minimumSize: const Size(double.infinity, 50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                  : null, // disabled when no password
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _isPasswordEntered
+                                    ? const Color(0xFFFF7300) // Orange when active
+                                    : Colors.grey, // Grey when disabled
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                               ),
-                            ),
-                            child: const Text(
-                              'Login',
-                              style: TextStyle(color: Colors.white),
+                              child: const Text(
+                                'Login',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -200,18 +236,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           const SizedBox(height: 20),
 
-                          // Google Button
-                          OutlinedButton.icon(
-                            onPressed: () {},
-                            icon: Image.asset(
-                              'assets/goggle_logo.png',
-                              width: 18,
-                              height: 18,
-                            ),
-                            label: const Text('Continue with Google'),
-                            style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.grey[200],
-                              minimumSize: const Size(double.infinity, 50),
+                          // Google Button (62 height)
+                          SizedBox(
+                            height: 62,
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: () {},
+                              icon: Image.asset(
+                                'assets/goggle_logo.png',
+                                width: 20,
+                                height: 20,
+                              ),
+                              label: const Text('Continue with Google'),
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: Colors.grey[200],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 20),

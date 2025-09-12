@@ -60,8 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           width: _currentPage == index ? 20 : 8,
           height: 8,
           decoration: BoxDecoration(
-            color:
-            _currentPage == index ? const Color(0xFFFF7300) : Colors.grey,
+            color: _currentPage == index ? const Color(0xFFFF7300) : Colors.grey,
             borderRadius: BorderRadius.circular(4),
           ),
         ),
@@ -91,75 +90,67 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // 🔶 Top Gradient Section
-                    Container(
-                      width: size.width,
-                      height: size.height * 0.45,
-                      decoration: BoxDecoration(
-                        gradient: data['gradient'],
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                          bottomLeft: Radius.circular(30),
-                          bottomRight: Radius.circular(30),
-                        ),
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            top: 40,
-                            right: 30,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.pushReplacementNamed(
-                                    context, '/welcome');
-                              },
-                              child: Container(
-                                width: 55,
-                                height: 30,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Text(
-                                  'Skip',
-                                  style: TextStyle(
-                                    fontFamily: "Poppins",
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
+                    // 🔶 Image with Skip inside
+                    Center(
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 0),
+                        width: size.width * 1.3,
+                        height: size.height * 0.49,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(22), // 👈 rounded edges
+                          child: Stack(
+                            children: [
+                              // Background Image
+                              Image.asset(
+                                data['image'],
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                              ),
+
+                              // Skip Button (inside rounded image)
+                              Positioned(
+                                top: 44,
+                                right: 33,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.pushReplacementNamed(
+                                        context, '/welcome');
+                                  },
+                                  child: Container(
+                                    width: 70,
+                                    height: 40,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: const Text(
+                                      'Skip',
+                                      style: TextStyle(
+                                        fontFamily: "Poppins",
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                          Center(
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 80),
-                              width: size.width * 0.6,
-                              height: size.height * 0.25,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: Image.asset(
-                                  data['image'],
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
 
-                    SizedBox(height: size.height * 0.04),
+                    SizedBox(height: size.height * 0.06),
 
                     // 🔸 Title with Bold Font
                     Text(
                       data['title'],
                       style: TextStyle(
-                        fontFamily: "Poppins", // 👈 Custom Font
+                        fontFamily: "Poppins",
                         fontSize: size.width * 0.08,
-                        fontWeight: FontWeight.bold, // 600 = SemiBold
+                        fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -173,10 +164,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         data['desc'],
                         style: const TextStyle(
                           fontFamily: "Poppins",
-                          fontSize: 14,
+                          fontSize: 15,
                           fontWeight: FontWeight.w400,
                           color: Colors.grey,
-                          height: 1.5,
+                          height: 1.9,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -188,7 +179,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             // 🔸 Dots
             Positioned(
-              bottom: size.height * 0.18,
+              bottom: size.height * 0.16,
               left: 0,
               right: 0,
               child: _buildDots(),
@@ -196,17 +187,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             // 🔶 Next / Get Started Button
             Positioned(
-              bottom: size.height * 0.08,
+              bottom: size.height * 0.05,
               left: size.width * 0.1,
               child: InkWell(
                 onTap: _nextPage,
                 child: Container(
                   width: size.width * 0.8,
-                  height: 50,
+                  height: 62,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF7300),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     _currentPage == onboardingData.length - 1

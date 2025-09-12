@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:country_picker/country_picker.dart';
 
-
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
@@ -79,20 +78,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: size.height * 0.05),
+                  SizedBox(height: size.height * 0.07),
                   const Padding(
                     padding: EdgeInsets.only(left: 8),
                     child: Text(
                       'Welcome',
-                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                      style:
+                      TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 14),
                   const Padding(
                     padding: EdgeInsets.only(left: 8),
                     child: Text(
-                      'Enter your \nphone number to get started.',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      'Enter your phone \nnumber to get started.',
+                      style: TextStyle(fontSize: 25, color: Colors.grey),
                     ),
                   ),
                   SizedBox(height: size.height * 0.03),
@@ -155,20 +155,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         // Grey line between
                         Divider(
                           height: 1,
-                          thickness: 1,
+                          thickness: 2,
                           color: Colors.grey.shade300,
                         ),
 
                         // Phone number input
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                           child: TextField(
                             controller: _phoneController,
                             decoration: InputDecoration(
+                              labelText: 'Phone number', // floating label
                               border: InputBorder.none,
-                              hintText: 'Phone number',
                               counterText: '',
-                              errorText: phoneError,
                             ),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
@@ -188,7 +188,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                   ),
 
-                  SizedBox(height: size.height * 0.02),
+                  // 👇 Error message box के नीचे
+                  if (phoneError != null)
+                    Padding(
+                      padding:
+                      const EdgeInsets.only(left: 12, top: 6, bottom: 6),
+                      child: Text(
+                        phoneError!,
+                        style:
+                        const TextStyle(color: Colors.red, fontSize: 13),
+                      ),
+                    ),
+
+                  SizedBox(height: size.height * 0.04),
 
                   const Center(
                     child: Text(
@@ -196,20 +208,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
+                        fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
                     ),
                   ),
 
-                  SizedBox(height: size.height * 0.015),
+                  SizedBox(height: size.height * 0.021),
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: 61,
                     child: ElevatedButton(
                       onPressed: () {
                         final error = validatePhone(phoneNumber);
                         if (error == null) {
-                          final fullNumber = '($selectedCountryCode)$phoneNumber';
+                          final fullNumber =
+                              '($selectedCountryCode)$phoneNumber';
                           Navigator.pushNamed(
                             context,
                             '/otp',
@@ -224,7 +238,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFF7300),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
                       child: const Text(

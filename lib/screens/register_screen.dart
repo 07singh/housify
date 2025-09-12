@@ -33,10 +33,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Center(
         child: Container(
           width: size.width,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(100),
-          ),
           child: Column(
             children: [
               // AppBar
@@ -68,100 +64,122 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            SizedBox(height: 20),
-                            Text(
-                              'Getting Started',
-                              style: TextStyle(
-                                  fontSize: 32, fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.left,
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              'Seems you are new here, \nLets set up your profile.',
-                              style:
-                              TextStyle(fontSize: 16, color: Colors.grey),
-                              textAlign: TextAlign.left,
-                            ),
-                          ],
-                        ),
-
                         const SizedBox(height: 20),
-
-                        // ✅ Name Validation
-                        _buildInputField(
-                          label: 'Full Name',
-                          controller: _nameController,
-                          keyboardType: TextInputType.name,
-                          textCapitalization: TextCapitalization.words,
-                          validator: (val) {
-                            if (val == null || val.isEmpty) {
-                              return 'Enter name';
-                            }
-                            if (!RegExp(r'^[A-Z][a-zA-Z ]+$').hasMatch(val)) {
-                              return 'Start with capital, letters only';
-                            }
-                            if (val.length < 2) {
-                              return 'Name must be at least 2 characters';
-                            }
-                            return null;
-                          },
+                        const Text(
+                          'Getting Started',
+                          style: TextStyle(
+                              fontSize: 32, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.left,
                         ),
-
-                        // ✅ Email Validation
-                        _buildInputField(
-                          label: 'Email Address',
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (val) {
-                            if (val == null || val.isEmpty) {
-                              return 'Enter email';
-                            }
-                            if (!RegExp(
-                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-                                .hasMatch(val)) {
-                              return 'Enter valid email';
-                            }
-                            return null;
-                          },
+                        const SizedBox(height: 15),
+                        const Text(
+                          'Seems you are new here, \nLets set up your profile.',
+                          style: TextStyle(fontSize: 25, color: Colors.grey),
+                          textAlign: TextAlign.left,
                         ),
+                        const SizedBox(height: 22),
 
-                        // Address
-                        _buildInputField(
-                          label: 'Current Address',
-                          controller: _addressController,
-                          validator: (val) => val == null || val.isEmpty
-                              ? 'Enter address'
-                              : null,
+                        // ✅ Name
+                        SizedBox(
+                          height: 65,
+                          child: _buildInputField(
+                            label: 'Full Name',
+                            controller: _nameController,
+                            keyboardType: TextInputType.name,
+                            textCapitalization: TextCapitalization.words,
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Enter name';
+                              }
+                              if (!RegExp(r'^[A-Z][a-zA-Z ]+$')
+                                  .hasMatch(val)) {
+                                return 'Start with capital, letters only';
+                              }
+                              if (val.length < 2) {
+                                return 'Name must be at least 2 characters';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
+                        const SizedBox(height: 16),
 
+                        // ✅ Email
+                        SizedBox(
+                          height: 65,
+                          child: _buildInputField(
+                            label: 'Email Address',
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Enter email';
+                              }
+                              if (!RegExp(
+                                  r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                                  .hasMatch(val)) {
+                                return 'Enter valid email';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // ✅ Address
+                        SizedBox(
+                          height: 65,
+                          child: _buildInputField(
+                            label: 'Current Address',
+                            controller: _addressController,
+                            validator: (val) =>
+                            val == null || val.isEmpty
+                                ? 'Enter address'
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // ✅ Zip + State Row
                         Row(
                           children: [
                             Expanded(
-                              child: _buildInputField(
-                                label: 'Zip Code',
-                                controller: _zipController,
-                                keyboardType: TextInputType.number,
-                                validator: (val) => val == null || val.isEmpty ? 'Enter Zip' : null,
-                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              child: SizedBox(
+                                height: 65,
+                                child: _buildInputField(
+                                  label: 'Zip Code',
+                                  controller: _zipController,
+                                  keyboardType: TextInputType.number,
+                                  validator: (val) =>
+                                  val == null || val.isEmpty
+                                      ? 'Enter Zip'
+                                      : null,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: SizedBox(
-                                height: 60, // ✅ same height as TextFormField
+                                height: 65,
                                 child: DropdownButtonFormField<String>(
                                   decoration: InputDecoration(
-                                    hintText: 'State',
+                                    labelText: "State",
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xFFA19E9E), width: 2),
                                     ),
                                     contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 16), // align text
+                                        horizontal: 12, vertical: 18),
                                   ),
-                                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                                  autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
                                   value: _selectedState,
                                   items: _states
                                       .map((state) => DropdownMenuItem(
@@ -169,47 +187,58 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     child: Text(state),
                                   ))
                                       .toList(),
-                                  onChanged: (val) => setState(() => _selectedState = val),
-                                  validator: (val) =>
-                                  val == null || val.isEmpty ? 'Select state' : null,
+                                  onChanged: (val) =>
+                                      setState(() => _selectedState = val),
+                                  validator: (val) => val == null || val.isEmpty
+                                      ? 'Select state'
+                                      : null,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 16),
 
-                        // ✅ Password Validation
-                        _buildInputField(
-                          label: 'Password',
-                          controller: _passwordController,
-                          isPassword: true,
-                          validator: (val) {
-                            if (val == null || val.isEmpty) {
-                              return 'Enter password';
-                            }
-                            if (!RegExp(
-                                r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
-                                .hasMatch(val)) {
-                              return 'Min 8 chars, upper, lower, number & special char';
-                            }
-                            return null;
-                          },
+                        // ✅ Password
+                        SizedBox(
+                          height: 65,
+                          child: _buildInputField(
+                            label: 'Password',
+                            controller: _passwordController,
+                            isPassword: true,
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Enter password';
+                              }
+                              if (!RegExp(
+                                  r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+                                  .hasMatch(val)) {
+                                return 'Min 8 chars, upper, lower, number & special char';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
+                        const SizedBox(height: 16),
 
-                        // Confirm Password
-                        _buildInputField(
-                          label: 'Confirm Password',
-                          controller: _confirmPasswordController,
-                          isPassword: true,
-                          validator: (val) {
-                            if (val != _passwordController.text) {
-                              return 'Passwords do not match';
-                            }
-                            return null;
-                          },
+                        // ✅ Confirm Password
+                        SizedBox(
+                          height: 65,
+                          child: _buildInputField(
+                            label: 'Confirm Password',
+                            controller: _confirmPasswordController,
+                            isPassword: true,
+                            validator: (val) {
+                              if (val != _passwordController.text) {
+                                return 'Passwords do not match';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
+                        const SizedBox(height: 16),
 
+                        // ✅ Terms Checkbox
                         Row(
                           children: [
                             Checkbox(
@@ -224,12 +253,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   text:
                                   'By creating an account, you agree to our ',
                                   style: TextStyle(
-                                      fontSize: 12, color: Colors.grey),
+                                      fontSize: 15, color: Colors.grey),
                                   children: [
                                     TextSpan(
-                                      text: 'Terms and Conditions',
-                                      style: TextStyle(
-                                          color: Color(0xFFFF7300)),
+                                      text: '\n Terms and Conditions',
+                                      style:
+                                      TextStyle(color: Color(0xFFFF7300)),
                                     ),
                                   ],
                                 ),
@@ -237,10 +266,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 16),
 
-                        const SizedBox(height: 10),
-
-                        // Submit
+                        // ✅ Submit Button
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState?.validate() == true &&
@@ -250,21 +278,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     content:
                                     Text("Account Created Successfully")),
                               );
-
                               Navigator.pushNamed(context, '/login');
                             } else if (!_agree) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                    content:
-                                    Text("Please agree to terms")),
+                                    content: Text("Please agree to terms")),
                               );
                             }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFF87202),
-                            minimumSize: const Size(double.infinity, 50),
+                            minimumSize: const Size(double.infinity, 65),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                           ),
                           child: const Text(
@@ -273,8 +299,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         ),
+                        const SizedBox(height: 12),
 
-                        const SizedBox(height: 10),
+                        // ✅ Already have account
                         Center(
                           child: GestureDetector(
                             onTap: () {
@@ -319,24 +346,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
     TextCapitalization textCapitalization = TextCapitalization.none,
     List<TextInputFormatter>? inputFormatters,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: TextFormField(
-        controller: controller,
-        obscureText: isPassword,
-        keyboardType: keyboardType,
-        textCapitalization: textCapitalization,
-        validator: validator,
-        inputFormatters: inputFormatters,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        decoration: InputDecoration(
-          hintText: label,
-          hintStyle: const TextStyle(color: Colors.grey),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          errorStyle: const TextStyle(color: Colors.red),
+    return TextFormField(
+      controller: controller,
+      obscureText: isPassword,
+      keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
+      validator: validator,
+      inputFormatters: inputFormatters,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: Color(0xFFA19E9E), width: 2),
+        ),
+        errorStyle: const TextStyle(color: Colors.red),
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
       ),
     );
   }
