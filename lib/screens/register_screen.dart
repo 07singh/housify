@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -21,8 +23,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? _selectedState;
   bool _agree = false;
+  bool _isLoading = false;
 
   final List<String> _states = ['State 1', 'State 2', 'State 3'];
+
+  Future<void> _registerUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://jsonplaceholder.typicode.com/posts'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "name": _nameController.text,
+          "email": _emailController.text,
+          "address": _addressController.text,
+          "zip": _zipController.text,
+          "state": _selectedState,
+          "password": _passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Account Created Successfully")),
+        );
+        Navigator.pushNamed(context, '/login');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Registration Failed! Try again.")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,14 +94,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const Spacer(),
-                    const SizedBox(width: 48),
+                    const SizedBox(width: 45),
                   ],
                 ),
               ),
 
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -68,7 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const Text(
                           'Getting Started',
                           style: TextStyle(
-                              fontSize: 32, fontWeight: FontWeight.bold),
+                              fontSize: 37, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.left,
                         ),
                         const SizedBox(height: 15),
@@ -91,8 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (val == null || val.isEmpty) {
                                 return 'Enter name';
                               }
-                              if (!RegExp(r'^[A-Z][a-zA-Z ]+$')
-                                  .hasMatch(val)) {
+                              if (!RegExp(r'^[A-Z][a-zA-Z ]+$').hasMatch(val)) {
                                 return 'Start with capital, letters only';
                               }
                               if (val.length < 2) {
@@ -115,8 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (val == null || val.isEmpty) {
                                 return 'Enter email';
                               }
-                              if (!RegExp(
-                                  r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                              if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
                                   .hasMatch(val)) {
                                 return 'Enter valid email';
                               }
@@ -257,8 +298,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   children: [
                                     TextSpan(
                                       text: '\n Terms and Conditions',
-                                      style:
-                                      TextStyle(color: Color(0xFFFF7300)),
+                                      style: TextStyle(
+                                          color: Color(0xFFFF7300)),
                                     ),
                                   ],
                                 ),
@@ -270,19 +311,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         // ✅ Submit Button
                         ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState?.validate() == true &&
+                          onPressed: _isLoading
+                              ? null
+                              : () {
+                            if (_formKey.currentState?.validate() ==
+                                true &&
                                 _agree) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                    Text("Account Created Successfully")),
-                              );
-                              Navigator.pushNamed(context, '/login');
+                              _registerUser();
                             } else if (!_agree) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                    content: Text("Please agree to terms")),
+                                    content: Text(
+                                        "Please agree to terms")),
                               );
                             }
                           },
@@ -293,10 +333,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                           ),
-                          child: const Text(
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
+                              color: Colors.white)
+                              : const Text(
                             'Continue',
-                            style:
-                            TextStyle(fontSize: 16, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.white),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -310,8 +353,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             child: RichText(
                               text: const TextSpan(
                                 text: 'Already have an account? ',
-                                style:
-                                TextStyle(fontSize: 14, color: Colors.grey),
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.grey),
                                 children: [
                                   TextSpan(
                                     text: 'Login',

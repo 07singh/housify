@@ -26,6 +26,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   image_picker: ^1.0.4
   flutter_map: ^5.0.0
+  uni_links: ^0.5.1
   
 
 
@@ -35,7 +36,10 @@ dev_dependencies:
   # For linting and code analysis
   flutter_lints: ^5.0.0
   google_fonts: ^6.2.1
-  http: ^1.2.0
+  http: ^1.1.0
+  shared_preferences: ^2.1.1
+  latlong2: ^0.9.0
+  geocoding: ^2.1.0
 
 flutter:
   uses-material-design: true

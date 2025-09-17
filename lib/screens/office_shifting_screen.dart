@@ -49,23 +49,32 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // 🔹 Header
+            // 🔹 Housify-style Header
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+              height: 70, // ✅ Housify-style height
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               color: Colors.black,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.arrow_back, color: Colors.white)),
-                  const Text(
-                    'Office Shifting Service',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                      child: const Icon(Icons.arrow_back,
+                          color: Colors.white, size: 28)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.business,
+                          color: Colors.white, size: 24), // optional logo
+                      SizedBox(width: 8),
+                      Text(
+                        'Office Shifting',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                    ],
                   ),
                   GestureDetector(
                     onTap: () {
@@ -75,8 +84,21 @@ class _OfficeShiftingScreenState extends State<OfficeShiftingScreen> {
                             builder: (_) => const NotificationScreen()),
                       );
                     },
-                    child:
-                    const Icon(Icons.notifications_none, color: Colors.white),
+                    child: Stack(
+                      children: [
+                        const Icon(Icons.notifications, color: Colors.white, size: 28),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                                color: Colors.red, shape: BoxShape.circle),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

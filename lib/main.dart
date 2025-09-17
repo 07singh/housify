@@ -8,6 +8,7 @@ import 'screens/forget_password_screen.dart';
 import 'screens/reset_email_screen.dart';
 import 'screens/set_new_password_screen.dart';
 import 'screens/housify_home_screen.dart';
+import 'services/api_service.dart';
 
 void main() {
   runApp(const HouseServiceApp());
@@ -24,14 +25,15 @@ class HouseServiceApp extends StatelessWidget {
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
-            return MaterialPageRoute(builder: (_) => OnboardingScreen());
+            return MaterialPageRoute(builder: (_) => const OnboardingScreen());
 
           case '/welcome':
-            return MaterialPageRoute(builder: (_) => WelcomeScreen());
+            return MaterialPageRoute(builder: (_) => const WelcomeScreen());
 
           case '/otp':
             final args = settings.arguments;
-            if (args is Map<String, dynamic> && args.containsKey('phoneNumber')) {
+            if (args is Map<String, dynamic> &&
+                args.containsKey('phoneNumber')) {
               return MaterialPageRoute(
                 builder: (_) => OTPScreen(phoneNumber: args['phoneNumber']),
               );
@@ -39,24 +41,22 @@ class HouseServiceApp extends StatelessWidget {
             return _errorScreen('Invalid arguments for OTP screen');
 
           case '/register':
-            return MaterialPageRoute(builder: (_) => RegisterScreen());
+            return MaterialPageRoute(builder: (_) => const RegisterScreen());
 
           case '/login':
-            return MaterialPageRoute(builder: (_) => LoginScreen());
+            return MaterialPageRoute(builder: (_) => const LoginScreen());
 
           case '/forget_password':
-            return MaterialPageRoute(builder: (_) => ForgetPasswordScreen());
+            return MaterialPageRoute(builder: (_) => const ForgetPasswordScreen());
 
           case '/reset_email':
-            return MaterialPageRoute(builder: (_) => ResetEmailScreen());
+            return MaterialPageRoute(builder: (_) => const ResetEmailScreen());
 
           case '/set_new_password':
-            return MaterialPageRoute(builder: (_) => SetNewPasswordScreen());
+            return MaterialPageRoute(builder: (_) => const SetNewPasswordScreen());
 
           case '/home':
-            return MaterialPageRoute(builder: (_) =>HousifyHomeScreen());
-
-
+            return MaterialPageRoute(builder: (_) => const HousifyHomeScreen());
 
           default:
             return _errorScreen('404 - Page not found');
@@ -78,4 +78,3 @@ class HouseServiceApp extends StatelessWidget {
     );
   }
 }
-

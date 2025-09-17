@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:geocoding/geocoding.dart';
 import 'shifting_order_screen.dart';
 
 class SelectDestinationScreen extends StatefulWidget {
@@ -29,6 +32,25 @@ class SelectDestinationScreen extends StatefulWidget {
 }
 
 class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
+  LatLng selectedLocation = LatLng(28.6139, 77.2090); // Default Delhi
+  String currentAddress = "Move map to select location";
+
+  Future<void> _getAddressFromLatLng(LatLng latLng) async {
+    try {
+      List<Placemark> placemarks =
+      await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+
+      setState(() {
+        currentAddress =
+        "${placemarks.first.street}, ${placemarks.first.locality}";
+      });
+    } catch (e) {
+      setState(() {
+        currentAddress = "Address not found";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,15 +103,33 @@ class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
               ),
               child: Stack(
                 children: [
-                  // ✅ Full Map
+                  // ✅ FlutterMap
                   Positioned.fill(
                     child: ClipRRect(
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(30),
                       ),
-                      child: Image.asset(
-                        'assets/map.png',
-                        fit: BoxFit.cover,
+                      child: FlutterMap(
+                        options: MapOptions(
+                          center: selectedLocation,
+                          zoom: 13.0,
+                          onPositionChanged: (pos, _) {
+                            if (pos.center != null) {
+                              setState(() {
+                                selectedLocation = pos.center!;
+                              });
+                              _getAddressFromLatLng(selectedLocation);
+                            }
+                          },
+                        ),
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            subdomains: ['a', 'b', 'c'],
+                            userAgentPackageName: 'com.example.yourapp',
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -113,42 +153,20 @@ class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
                         ],
                       ),
                       child: Row(
-                        children: const [
-                          Icon(Icons.circle, size: 12, color: Colors.black),
-                          SizedBox(width: 8),
-                          Expanded(
-                              child:
-                              Text('2045 Lodgeville Street, Eagan')),
+                        children: [
+                          const Icon(Icons.circle,
+                              size: 12, color: Colors.black),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(currentAddress)),
                         ],
                       ),
                     ),
                   ),
 
-                  // ✅ Center Pin
+                  // ✅ Center Pin (Fixed)
                   const Center(
                     child: Icon(Icons.location_on,
-                        color: Colors.yellow, size: 50),
-                  ),
-
-                  // ✅ Current Location Icon (Bottom right)
-                  Positioned(
-                    bottom: 100,
-                    right: 20,
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 6,
-                          )
-                        ],
-                      ),
-                      child: const Icon(Icons.my_location,
-                          color: Colors.orange, size: 30),
-                    ),
+                        color: Colors.red, size: 50),
                   ),
 
                   // ✅ Confirm Button at bottom
@@ -183,7 +201,7 @@ class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
                           ),
                         ),
                         child: const Text(
-                          'Confirm',
+                          'Confirm Location',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

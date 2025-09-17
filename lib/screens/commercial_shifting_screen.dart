@@ -37,15 +37,48 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _Header(onBack: () => Navigator.pop(context)),
+            // 🔹 Housify-style Header
+            Container(
+              height: 70,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              color: Colors.black,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(Icons.arrow_back,
+                          color: Colors.white, size: 28)),
+                  const Text(
+                    'Commercial Shifting',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const NotificationScreen()),
+                      );
+                    },
+                    child: const Icon(Icons.notifications,
+                        color: Colors.white, size: 28),
+                  ),
+                ],
+              ),
+            ),
+
+            // 🔹 Main Content
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30)),
                 ),
                 child: ListView(
                   padding: const EdgeInsets.all(20),
@@ -58,7 +91,6 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
                     const SizedBox(height: 10),
                     const _NotesSection(),
 
-                    // 🔹 Divider
                     const SizedBox(height: 20),
                     const Divider(color: Colors.grey, thickness: 0.5),
                     const SizedBox(height: 20),
@@ -66,8 +98,7 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
                     // Counters
                     _buildCounterSection(
                       title: 'Heavy Item',
-                      subtitle:
-                      'For automated machines we charge 10 per item',
+                      subtitle: 'For automated machines we charge 10 per item',
                       count: heavyItemCount,
                       onAdd: () => setState(() => heavyItemCount++),
                       onRemove: () {
@@ -78,8 +109,7 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
                     ),
                     _buildCounterSection(
                       title: 'Workers',
-                      subtitle:
-                      'Regular cost is 5/hr. Total cost will be calculated later',
+                      subtitle: 'Regular cost is 5/hr. Total cost will be calculated later',
                       count: workerCount,
                       onAdd: () => setState(() => workerCount++),
                       onRemove: () {
@@ -90,8 +120,7 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
                     ),
                     _buildCounterSection(
                       title: 'Electrician',
-                      subtitle:
-                      'Regular cost is 10/hr. Total cost will be calculated later',
+                      subtitle: 'Regular cost is 10/hr. Total cost will be calculated later',
                       count: electricianCount,
                       onAdd: () => setState(() => electricianCount++),
                       onRemove: () {
@@ -100,7 +129,7 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
                         }
                       },
                     ),
-                    const SizedBox(height: 80), // Button ke liye space
+                    const SizedBox(height: 100),
                   ],
                 ),
               ),
@@ -109,7 +138,7 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
         ),
       ),
 
-      // ✅ Updated Button Style
+      // 🔹 Proceed Button
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15),
         color: Colors.white,
@@ -117,7 +146,7 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
           height: 56,
           child: ElevatedButton(
             onPressed: () {
-              // Proceed ka logic yaha likho
+              // Proceed ka logic
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
@@ -140,42 +169,7 @@ class _CommercialShiftingScreenState extends State<CommercialShiftingScreen> {
   }
 }
 
-class _Header extends StatelessWidget {
-  final VoidCallback onBack;
-  const _Header({super.key, required this.onBack});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-      color: Colors.black,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-              onTap: onBack,
-              child: const Icon(Icons.arrow_back, color: Colors.white)),
-          const Text(
-            'Commercial Shifting',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => NotificationScreen()));
-            },
-            child: const Icon(Icons.notifications, color: Colors.white),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
+// 🔹 Sections
 class _IndustrySizeSection extends StatelessWidget {
   const _IndustrySizeSection({super.key});
 
@@ -282,6 +276,7 @@ class _NotesSection extends StatelessWidget {
   }
 }
 
+// 🔹 Counter Builder
 Widget _buildCounterSection({
   required String title,
   required String subtitle,
@@ -292,7 +287,6 @@ Widget _buildCounterSection({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      // Title + Counter Row
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -301,23 +295,18 @@ Widget _buildCounterSection({
               Icon(
                 title == 'Heavy Item'
                     ? Icons.local_shipping
-                    : (title == 'Electrician'
-                    ? Icons.flash_on
-                    : Icons.person),
+                    : (title == 'Electrician' ? Icons.flash_on : Icons.person),
                 color: Colors.orange,
               ),
               const SizedBox(width: 10),
-              Text(
-                title,
-                style:
-                const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              Text(title,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold)),
             ],
           ),
           Row(
             children: [
-              IconButton(
-                  icon: const Icon(Icons.remove), onPressed: onRemove),
+              IconButton(icon: const Icon(Icons.remove), onPressed: onRemove),
               Text('$count',
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold)),
@@ -326,7 +315,6 @@ Widget _buildCounterSection({
           ),
         ],
       ),
-
       const SizedBox(height: 5),
       Text(subtitle, style: const TextStyle(color: Colors.grey)),
       const SizedBox(height: 10),

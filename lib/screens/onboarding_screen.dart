@@ -95,9 +95,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Container(
                         margin: const EdgeInsets.only(top: 0),
                         width: size.width * 1.3,
-                        height: size.height * 0.49,
+                        height: size.height * 0.45,
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(22), // 👈 rounded edges
+                          borderRadius: BorderRadius.circular(22),
                           child: Stack(
                             children: [
                               // Background Image
@@ -110,7 +110,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                               // Skip Button (inside rounded image)
                               Positioned(
-                                top: 44,
+                                top: 26,
                                 right: 33,
                                 child: InkWell(
                                   onTap: () {
@@ -118,12 +118,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                         context, '/welcome');
                                   },
                                   child: Container(
-                                    width: 70,
-                                    height: 40,
+                                    width: 75,
+                                    height: 41,
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
                                       color: Colors.white.withOpacity(0.5),
-                                      borderRadius: BorderRadius.circular(15),
+                                      borderRadius: BorderRadius.circular(25),
                                     ),
                                     child: const Text(
                                       'Skip',
@@ -179,7 +179,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             // 🔸 Dots
             Positioned(
-              bottom: size.height * 0.16,
+              bottom: size.height * 0.14,
               left: 0,
               right: 0,
               child: _buildDots(),
@@ -187,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             // 🔶 Next / Get Started Button
             Positioned(
-              bottom: size.height * 0.05,
+              bottom: size.height * 0.04,
               left: size.width * 0.1,
               child: InkWell(
                 onTap: _nextPage,

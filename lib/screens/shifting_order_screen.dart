@@ -27,6 +27,17 @@ class OrderDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     int totalFurniture = furnitures.values.fold(0, (a, b) => a + b);
 
+    // ✅ Cost Calculation (Dynamic)
+    double houseCost = 22; // base
+    double furnitureCost = 30 + (packedBoxes > 0 ? 5 : 0);
+    double workerCost = 15 + ((workers + electricians) > 1 ? 5 : 0);
+    double vehicleCost = 20;
+    double serviceCharge = 2;
+    double promoDiscount = 20;
+
+    double totalCost =
+        houseCost + furnitureCost + workerCost + vehicleCost + serviceCharge - promoDiscount;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -105,10 +116,10 @@ class OrderDetailsScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 12),
                           _buildAddressRow(
-                              Icons.circle, "2045 Lodgeville Street, Eagan"),
+                              Icons.circle, "Pickup: $selectedHouse"),
                           const SizedBox(height: 8),
                           _buildAddressRow(Icons.location_on,
-                              "3329 Joyce Street, PA, USA",
+                              "Drop: Destination Address (Dynamic)",
                               iconColor: Colors.green),
                         ],
                       ),
@@ -128,20 +139,28 @@ class OrderDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
 
-                    // --- ORDER ITEMS ---
-                    _buildOrderItem("🏠", "3 Bedrooms, 1 Kitchen",
-                        "+\$5 for baby room", "\$22"),
-                    _buildOrderItem("🛋️", "$totalFurniture Furniture, $packedBoxes Boxes",
-                        "+\$5 for additional box", "\$30"),
-                    _buildOrderItem("👷",
+                    // --- ORDER ITEMS (Dynamic) ---
+                    _buildOrderItem(
+                        "🏠",
+                        "$selectedHouse",
+                        "+\$5 for baby room",
+                        "\$$houseCost"),
+                    _buildOrderItem(
+                        "🛋️",
+                        "$totalFurniture Furniture, $packedBoxes Boxes",
+                        "+\$5 for additional box",
+                        "\$$furnitureCost"),
+                    _buildOrderItem(
+                        "👷",
                         "$workers Worker, $electricians Electrician",
-                        "+\$5 for additional person", "\$15"),
+                        "+\$5 for additional person",
+                        "\$$workerCost"),
 
                     const Divider(height: 32),
 
                     // --- COST DETAILS ---
-                    _buildCostRow("Vehicle ($selectedVehicle)", "\$20"),
-                    _buildCostRow("Service Charge", "\$2"),
+                    _buildCostRow("Vehicle ($selectedVehicle)", "\$$vehicleCost"),
+                    _buildCostRow("Service Charge", "\$$serviceCharge"),
 
                     // Promo Code
                     Row(
@@ -169,14 +188,14 @@ class OrderDetailsScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const Text("-\$20",
-                            style: TextStyle(
+                        Text("-\$$promoDiscount",
+                            style: const TextStyle(
                                 color: Colors.red, fontWeight: FontWeight.bold)),
                       ],
                     ),
 
                     const SizedBox(height: 12),
-                    _buildCostRow("Total (Estimated Cost)", "\$56",
+                    _buildCostRow("Total (Estimated Cost)", "\$$totalCost",
                         isBold: true, isOrange: true),
 
                     const SizedBox(height: 24),
@@ -205,20 +224,19 @@ class OrderDetailsScreen extends StatelessWidget {
       ),
 
       // ✅ Confirm Button
-      // ✅ Confirm Button
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
         child: SizedBox(
           height: 56,
-          width: double.infinity, // full width
+          width: double.infinity,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide.none, // 🔥 Removes black border
+                side: BorderSide.none,
               ),
-              elevation: 0, // no shadow if you want flat style
+              elevation: 0,
             ),
             onPressed: () {
               Navigator.push(
@@ -231,9 +249,9 @@ class OrderDetailsScreen extends StatelessWidget {
                 ),
               );
             },
-            child: const Text(
-              "Confirm (\$56)",
-              style: TextStyle(
+            child: Text(
+              "Confirm (\$$totalCost)",
+              style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 18),

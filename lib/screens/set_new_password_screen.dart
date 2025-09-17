@@ -27,123 +27,144 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isValid = false;
 
-  void _checkValid() {
+  @override
+  void initState() {
+    super.initState();
+    _passwordController.addListener(_updateUI);
+    _confirmPasswordController.addListener(_updateUI);
+  }
+
+  void _updateUI() {
     setState(() {
-      _isValid = _formKey.currentState?.validate() ?? false;
+      // Password is valid AND confirm password matches
+      _isValid = _formKey.currentState?.validate() == true &&
+          _passwordController.text == _confirmPasswordController.text;
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // 🔹 Responsive screen
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
+  bool _isConfirmPasswordMatching() {
+    return _confirmPasswordController.text.isNotEmpty &&
+        _confirmPasswordController.text == _passwordController.text;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
-      body: Center(
-        child: Container(
-          width: size.width, // 🔹 Full width
-          height: size.height, // 🔹 Full height
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30), // 🔹 Rounded corners
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
             child: Form(
               key: _formKey,
-              onChanged: _checkValid,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // 🔹 Left align
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 60), // 🔹 Heading spacing
-
-                  // Heading
+                  const SizedBox(height: 20),
                   const Text(
-                    'Set New Password',
+                    'Set new password',
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 36,
                       fontWeight: FontWeight.bold,
                     ),
-                    textAlign: TextAlign.start, // 🔹 Left align
                   ),
-
                   const SizedBox(height: 10),
-
-                  // Description
                   const Text(
-                    'Create strong and secured password',
-                    textAlign: TextAlign.start, // 🔹 Left align
+                    'Create strong and secured new password.',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 25,
                       color: Colors.grey,
                     ),
                   ),
-
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
 
                   // Password Field
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      hintText: 'Password',
-                      hintStyle: const TextStyle(color: Colors.grey),
+                      labelText: 'Password',
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelStyle: const TextStyle(color: Colors.grey),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: const BorderSide(color: Colors.orange),
                       ),
                     ),
                     validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Enter password';
-                      }
-                      if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$')
+                      if (val == null || val.isEmpty) return 'Enter password';
+                      if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$')
                           .hasMatch(val)) {
-                        return 'Use uppercase, lowercase & number';
+                        return 'Password must be 8+ chars, include uppercase, lowercase & number';
                       }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 24),
 
                   // Confirm Password Field
                   TextFormField(
                     controller: _confirmPasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      hintText: 'Confirm Password',
-                      hintStyle: const TextStyle(color: Colors.grey),
+                      labelText: 'Confirm Password',
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelStyle: TextStyle(
+                        color: _isConfirmPasswordMatching()
+                            ? Colors.green
+                            : Colors.grey,
+                      ),
+                      suffixIcon: _isConfirmPasswordMatching()
+                          ? const Icon(Icons.check, color: Colors.green)
+                          : null,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide(
+                          color: _isConfirmPasswordMatching()
+                              ? Colors.green
+                              : Colors.orange,
+                        ),
                       ),
                     ),
                     validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Confirm password';
-                      }
+                      if (val == null || val.isEmpty) return 'Confirm password';
                       if (val != _passwordController.text) {
                         return 'Passwords do not match';
                       }
                       return null;
                     },
                   ),
-
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
 
                   // Save Password Button
                   SizedBox(
                     width: double.infinity,
-                    height: 61,
+                    height: 60,
                     child: ElevatedButton(
                       onPressed: _isValid
                           ? () {
-                        // ✅ Only navigate when valid
+                        // Proceed only if valid
                         Navigator.pushNamed(context, '/login');
                       }
-                          : null,
+                          : null, // disabled if not valid
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFF87202),
+                        backgroundColor:
+                        _isValid ? Colors.orange : Colors.orange,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
                       child: const Text(
@@ -156,8 +177,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 40), // Bottom spacing
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

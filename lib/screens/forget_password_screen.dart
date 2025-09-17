@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/api_service.dart'; // 👈 Import your API service
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
@@ -9,22 +10,44 @@ class ForgetPasswordScreen extends StatefulWidget {
 }
 
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
-  final TextEditingController emailController =
-  TextEditingController(text: 'uiuxseju@email.com');
+  final TextEditingController emailController = TextEditingController(text: '');
   final _formKey = GlobalKey<FormState>();
   bool _isValid = false;
+  bool _isLoading = false; // 👈 Loading state
 
+  // Check form validity
   void _checkValid() {
     setState(() {
       _isValid = _formKey.currentState?.validate() ?? false;
     });
   }
 
-  void _handleResetPassword() {
+  // Handle Reset Password button press
+  void _handleResetPassword() async {
     if (!_isValid) return;
 
-    // Navigate to reset email screen
-    Navigator.pushNamed(context, '/reset_email');
+    setState(() => _isLoading = true);
+
+    final res = await ApiService.forgetPassword(email: emailController.text.trim());
+
+    setState(() => _isLoading = false);
+
+    if (res['success'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Reset link sent to your email!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pushNamed(context, '/reset_email'); // Navigate after success
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res['message'] ?? "Something went wrong"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -42,23 +65,23 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             borderRadius: BorderRadius.circular(30),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 33),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 90),
+                const SizedBox(height: 150),
 
                 // Heading
                 const Text(
                   'Forget Password',
                   style: TextStyle(
-                    fontSize: 33,
+                    fontSize: 37,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                 ),
 
-                const SizedBox(height: 90),
+                const SizedBox(height: 25),
 
                 // Form
                 Form(
@@ -71,11 +94,11 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         'Enter your email address \nto reset password.',
                         style: TextStyle(fontSize: 25, color: Colors.grey),
                       ),
-                      const SizedBox(height: 25),
+                      const SizedBox(height: 35),
 
-                      // Email Field (Same size as button)
+                      // Email Field
                       SizedBox(
-                        height: 62,
+                        height: 63,
                         child: TextFormField(
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
@@ -114,24 +137,29 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
-                      // Reset Button (62 height, Grey → Orange)
+                      // Reset Button
                       SizedBox(
                         width: double.infinity,
-                        height: 62, // ✅ Same as Email field
+                        height: 62,
                         child: ElevatedButton(
-                          onPressed:
-                          _isValid ? _handleResetPassword : null,
+                          onPressed: _isValid && !_isLoading
+                              ? _handleResetPassword
+                              : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: _isValid
+                            backgroundColor: _isValid && !_isLoading
                                 ? const Color(0xFFFF7300) // Orange
                                 : Colors.grey, // Grey when invalid
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
                           ),
-                          child: const Text(
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                              : const Text(
                             'Reset Password',
                             style: TextStyle(
                               fontSize: 16,

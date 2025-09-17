@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'select_destation_screen.dart';
+import 'package:geocoding/geocoding.dart';
 
 class ShiftingDetailsScreen extends StatefulWidget {
   final String selectedHouse;
@@ -27,6 +30,44 @@ class ShiftingDetailsScreen extends StatefulWidget {
 
 class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
   String selectedVehicle = 'Mini Truck';
+
+  // Example pickup & drop coordinates
+  final LatLng pickupLocation = LatLng(28.6139, 77.2090); // Delhi
+  final LatLng dropLocation = LatLng(28.7041, 77.1025); // Another point
+
+  String pickupAddress = "Loading pickup...";
+  String dropAddress = "Loading drop...";
+
+  @override
+  void initState() {
+    super.initState();
+    _getAddresses();
+  }
+
+  Future<void> _getAddresses() async {
+    try {
+      List<Placemark> pickupPlacemarks = await placemarkFromCoordinates(
+        pickupLocation.latitude,
+        pickupLocation.longitude,
+      );
+      List<Placemark> dropPlacemarks = await placemarkFromCoordinates(
+        dropLocation.latitude,
+        dropLocation.longitude,
+      );
+
+      setState(() {
+        pickupAddress =
+        "${pickupPlacemarks.first.street}, ${pickupPlacemarks.first.locality}";
+        dropAddress =
+        "${dropPlacemarks.first.street}, ${dropPlacemarks.first.locality}";
+      });
+    } catch (e) {
+      setState(() {
+        pickupAddress = "Pickup address not found";
+        dropAddress = "Drop address not found";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +127,7 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
               ),
             ),
 
-            // ✅ White Content Section
+            // ✅ White Content Section with Map
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -96,14 +137,40 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
                 ),
                 child: Stack(
                   children: [
-                    // ✅ Replace Google Map with static map image
+                    // ✅ FlutterMap (OpenStreetMap)
                     Positioned.fill(
                       child: ClipRRect(
-                        borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(20)),
-                        child: Image.asset(
-                          "assets/map.png", // <-- apna static map image
-                          fit: BoxFit.cover,
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                        child: FlutterMap(
+                          options: MapOptions(
+                            center: pickupLocation,
+                            zoom: 12.0,
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                              subdomains: ['a', 'b', 'c'],
+                              userAgentPackageName: 'com.example.yourapp', // Required in v5+
+                            ),
+                            MarkerLayer(
+                              markers: [
+                                Marker(
+                                  point: pickupLocation,
+                                  width: 40,
+                                  height: 40,
+                                  builder: (ctx) =>
+                                  const Icon(Icons.home, color: Colors.green, size: 40),
+                                ),
+                                Marker(
+                                  point: dropLocation,
+                                  width: 40,
+                                  height: 40,
+                                  builder: (ctx) =>
+                                  const Icon(Icons.location_on, color: Colors.red, size: 40),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -142,120 +209,7 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
                     // ✅ Bottom Section with addresses + vehicles + button
                     Align(
                       alignment: Alignment.bottomCenter,
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(30)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 10,
-                              offset: Offset(0, -2),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Pickup & Drop
-                            Column(
-                              children: const [
-                                Row(
-                                  children: [
-                                    Icon(Icons.circle,
-                                        size: 12, color: Colors.black),
-                                    SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text("2045 Lodgeville Road, Eagan"),
-                                    ),
-                                  ],
-                                ),
-                                Divider(),
-                                Row(
-                                  children: [
-                                    Icon(Icons.location_on,
-                                        size: 16, color: Colors.green),
-                                    SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text("3329 Joyce Street"),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Vehicles horizontal
-                            SizedBox(
-                              height: 120,
-                              child: ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: [
-                                  _buildVehicleCard(
-                                    'Mini Truck',
-                                    '~1.8 Ton',
-                                    'assets/truck.png',
-                                  ),
-                                  _buildVehicleCard(
-                                    'Pickup',
-                                    '~1.2 Ton',
-                                    'assets/truck.png',
-                                  ),
-                                  _buildVehicleCard(
-                                    'Large',
-                                    '~5 Ton',
-                                    'assets/truck.png',
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            const SizedBox(height: 12),
-
-                            // Proceed button
-                            SizedBox(
-                              width: double.infinity,
-                              height: 50,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          SelectDestinationScreen(
-                                            selectedHouse: widget.selectedHouse,
-                                            furnitures: widget.furnitures,
-                                            packedBoxes: widget.packedBoxes,
-                                            workers: widget.workers,
-                                            electricians: widget.electricians,
-                                            selectedDate: widget.selectedDate,
-                                            selectedTime: widget.selectedTime,
-                                            selectedVehicle: selectedVehicle,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Proceed',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      child: _buildBottomSection(),
                     ),
                   ],
                 ),
@@ -267,10 +221,104 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
     );
   }
 
-  // --- Helpers ---
-  String _formatDate(DateTime date) {
-    return "${date.day}-${date.month}-${date.year}";
+  Widget _buildBottomSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Pickup & Drop
+          // Pickup & Drop
+          Column(
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.circle, size: 12, color: Colors.black),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(pickupAddress)),
+                ],
+              ),
+              const Divider(),
+              Row(
+                children: [
+                  const Icon(Icons.location_on, size: 16, color: Colors.green),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(dropAddress)),
+                ],
+              ),
+            ],
+          ),
+
+          // Vehicles horizontal
+          SizedBox(
+            height: 120,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                _buildVehicleCard('Mini Truck', '~1.8 Ton', 'assets/truck.png'),
+                _buildVehicleCard('Pickup', '~1.2 Ton', 'assets/truck.png'),
+                _buildVehicleCard('Large', '~5 Ton', 'assets/truck.png'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Proceed button
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SelectDestinationScreen(
+                      selectedHouse: widget.selectedHouse,
+                      furnitures: widget.furnitures,
+                      packedBoxes: widget.packedBoxes,
+                      workers: widget.workers,
+                      electricians: widget.electricians,
+                      selectedDate: widget.selectedDate,
+                      selectedTime: widget.selectedTime,
+                      selectedVehicle: selectedVehicle,
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Proceed',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
+
+  // --- Helpers ---
+  String _formatDate(DateTime date) => "${date.day}-${date.month}-${date.year}";
 
   Widget _buildChip(IconData icon, String label) {
     return Row(
@@ -285,11 +333,7 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
   Widget _buildVehicleCard(String title, String capacity, String imagePath) {
     final isSelected = selectedVehicle == title;
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedVehicle = title;
-        });
-      },
+      onTap: () => setState(() => selectedVehicle = title),
       child: Container(
         width: 120,
         margin: const EdgeInsets.only(right: 12),
@@ -307,8 +351,7 @@ class _ShiftingDetailsScreenState extends State<ShiftingDetailsScreen> {
             Image.asset(imagePath, height: 50),
             const SizedBox(height: 8),
             Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text(capacity,
-                style: const TextStyle(fontSize: 12, color: Colors.black54)),
+            Text(capacity, style: const TextStyle(fontSize: 12, color: Colors.black54)),
           ],
         ),
       ),

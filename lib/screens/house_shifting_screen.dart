@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:house_service/screens/sehudule_shifting_screen.dart';
 import 'package:house_service/screens/notification_screen.dart';
+import '../services/api_service.dart'; // 👈 API Service import
 
 class HouseShiftingScreen extends StatefulWidget {
   const HouseShiftingScreen({Key? key}) : super(key: key);
@@ -47,6 +48,8 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
   int get totalFurnitureCount =>
       furnitures.values.fold(0, (sum, count) => sum + count);
 
+  bool isLoading = false; // 👈 Loading state
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,8 +79,6 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                       padding: const EdgeInsets.all(20),
                       children: [
                         const SizedBox(height: 10),
-
-                        // House Size Section
                         const Text("House Size",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
@@ -87,7 +88,6 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                           style: TextStyle(color: Colors.grey, fontSize: 13),
                         ),
                         const SizedBox(height: 12),
-
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: houseSizes.map((house) {
@@ -101,12 +101,9 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                             );
                           }).toList(),
                         ),
-
                         const SizedBox(height: 16),
                         Divider(color: Colors.grey.shade300, thickness: 1),
                         const SizedBox(height: 16),
-
-                        // Furnitures Section with Count
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -135,7 +132,6 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                           style: TextStyle(color: Colors.grey, fontSize: 13),
                         ),
                         const SizedBox(height: 12),
-
                         GridView.count(
                           crossAxisCount: 4,
                           shrinkWrap: true,
@@ -189,12 +185,9 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                             );
                           }).toList(),
                         ),
-
                         const SizedBox(height: 16),
                         Divider(color: Colors.grey.shade300, thickness: 1),
                         const SizedBox(height: 16),
-
-                        // Packed Boxes Section
                         const Text("Packed Boxes",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
@@ -204,7 +197,6 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                           style: TextStyle(color: Colors.grey, fontSize: 13),
                         ),
                         const SizedBox(height: 10),
-
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),
@@ -256,7 +248,6 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 90),
                       ],
                     ),
@@ -280,28 +271,11 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
                               ),
                               elevation: 0,
                             ),
-                            onPressed: () {
-                              if (selectedHouse == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Please select a house size")),
-                                );
-                                return;
-                              }
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ScheduleShiftingScreen(
-                                        selectedHouse: selectedHouse!,
-                                        furnitures: Map.from(furnitures),
-                                        packedBoxes: packedBoxes,
-                                      ),
-                                ),
-                              );
-                            },
-                            child: const Text("Proceed",
+                            onPressed: isLoading ? null : _handleProceed,
+                            child: isLoading
+                                ? const CircularProgressIndicator(
+                                color: Colors.white)
+                                : const Text("Proceed",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 18)),
                           ),
@@ -318,34 +292,79 @@ class _HouseShiftingScreenState extends State<HouseShiftingScreen> {
     );
   }
 
+  /// ------------------- New Method for API Call -------------------
+  void _handleProceed() async {
+    if (selectedHouse == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select a house size")),
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    // Call API
+    final res = await ApiService.submitHouseShifting(
+      houseType: selectedHouse!,
+      furnitures: Map.from(furnitures),
+      packedBoxes: packedBoxes,
+    );
+
+    setState(() => isLoading = false);
+
+    if (res["success"] == true) {
+      // Navigate to ScheduleShiftingScreen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ScheduleShiftingScreen(
+            selectedHouse: selectedHouse!,
+            furnitures: Map.from(furnitures),
+            packedBoxes: packedBoxes,
+          ),
+        ),
+      );
+    } else {
+      // Show error
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(res["message"] ?? "Error")));
+    }
+  }
+
   Widget _Header(
-      {required VoidCallback onBack,
-        required VoidCallback onNotification}) {
+      {required VoidCallback onBack, required VoidCallback onNotification}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+      height: 70,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       color: Colors.black,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
               onTap: onBack,
-              child: const Icon(Icons.arrow_back, color: Colors.white)),
-          const Text(
-            "House Shifting Service",
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              child: const Icon(Icons.arrow_back, color: Colors.white, size: 28)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: 8),
+              const Text(
+                "House Shifting",
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ],
           ),
           GestureDetector(
             onTap: onNotification,
             child: Stack(
               children: [
-                const Icon(Icons.notifications, color: Colors.white),
+                const Icon(Icons.notifications, color: Colors.white, size: 28),
                 Positioned(
                   right: 0,
                   top: 0,
                   child: Container(
-                    width: 10,
-                    height: 10,
+                    width: 6,
+                    height: 6,
                     decoration: const BoxDecoration(
                         color: Colors.red, shape: BoxShape.circle),
                   ),
