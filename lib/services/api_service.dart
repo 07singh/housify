@@ -71,7 +71,7 @@ class ApiService {
     }
   }
 
-  /// House Shifting
+  /// House Shifting (basic)
   static Future<Map<String, dynamic>> submitHouseShifting({
     required String houseType,
     required Map<String, int> furnitures,
@@ -97,6 +97,50 @@ class ApiService {
       return {"success": false, "message": e.toString()};
     }
   }
+
+
+
+  /// ✅ New: Submit Full Order (with location + extra details)
+  static Future<Map<String, dynamic>> placeOrder({
+    required String houseType,
+    required Map<String, int> furnitures,
+    required int packedBoxes,
+    required int workers,
+    required int electricians,
+    required String date,
+    required String time,
+    required String vehicle,
+    required Map<String, dynamic> location,
+    String? paymentMethod,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/orders'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "houseType": houseType,
+          "furnitures": furnitures,
+          "packedBoxes": packedBoxes,
+          "workers": workers,
+          "electricians": electricians,
+          "date": date,
+          "time": time,
+          "vehicle": vehicle,
+          "location": location,
+          if (paymentMethod != null) "paymentMethod": paymentMethod,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return {"success": false, "message": "Server error"};
+      }
+    } catch (e) {
+      return {"success": false, "message": e.toString()};
+    }
+  }
+
 
   /// Optional: Get Notifications
   static Future<Map<String, dynamic>> getNotifications() async {

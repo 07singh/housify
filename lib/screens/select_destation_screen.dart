@@ -3,6 +3,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geocoding/geocoding.dart';
 import 'shifting_order_screen.dart';
+import '../services/api_service.dart';
+// ✅ Make sure OrderDetailsScreen file exists
 
 class SelectDestinationScreen extends StatefulWidget {
   final String selectedHouse;
@@ -144,7 +146,7 @@ class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black12,
                             blurRadius: 6,
@@ -154,8 +156,7 @@ class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.circle,
-                              size: 12, color: Colors.black),
+                          const Icon(Icons.circle, size: 12, color: Colors.black),
                           const SizedBox(width: 8),
                           Expanded(child: Text(currentAddress)),
                         ],
@@ -165,8 +166,7 @@ class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
 
                   // ✅ Center Pin (Fixed)
                   const Center(
-                    child: Icon(Icons.location_on,
-                        color: Colors.red, size: 50),
+                    child: Icon(Icons.location_on, color: Colors.red, size: 50),
                   ),
 
                   // ✅ Confirm Button at bottom
@@ -177,22 +177,51 @@ class _SelectDestinationScreenState extends State<SelectDestinationScreen> {
                     child: SizedBox(
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => OrderDetailsScreen(
-                                selectedHouse: widget.selectedHouse,
-                                furnitures: widget.furnitures,
-                                packedBoxes: widget.packedBoxes,
-                                workers: widget.workers,
-                                electricians: widget.electricians,
-                                selectedDate: widget.selectedDate,
-                                selectedTime: widget.selectedTime,
-                                selectedVehicle: widget.selectedVehicle,
-                              ),
-                            ),
+                        onPressed: () async {
+                          final res = await ApiService.placeOrder(
+                            houseType: widget.selectedHouse,
+                            furnitures: widget.furnitures,
+                            packedBoxes: widget.packedBoxes,
+                            workers: widget.workers,
+                            electricians: widget.electricians,
+                            date: widget.selectedDate.toIso8601String(),
+                            time: widget.selectedTime,
+                            vehicle: widget.selectedVehicle,
+                            location: {
+                              "latitude": selectedLocation.latitude,
+                              "longitude": selectedLocation.longitude,
+                              "address": currentAddress,
+                            },
                           );
+
+                          if (res["success"] == true) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OrderDetailsScreen(
+                                  selectedHouse: widget.selectedHouse,
+                                  furnitures: widget.furnitures,
+                                  packedBoxes: widget.packedBoxes,
+                                  workers: widget.workers,
+                                  electricians: widget.electricians,
+                                  selectedDate: widget.selectedDate,
+                                  selectedTime: widget.selectedTime,
+                                  selectedVehicle: widget.selectedVehicle,
+                                  location: {
+                                    "latitude": selectedLocation.latitude,
+                                    "longitude": selectedLocation.longitude,
+                                    "address": currentAddress,
+                                  },
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      res["message"] ?? "Something went wrong")),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
