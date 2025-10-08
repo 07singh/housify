@@ -66,31 +66,7 @@ It features a clean and responsive UI, smooth navigation, and API integration fo
    }
    ```
 
----
 
-## 🧭 Folder Structure  
-```
-lib/
-│
-├── main.dart
-├── models/
-│   └── service_model.dart
-├── screens/
-│   ├── onboarding/
-│   │   ├── onboarding1.dart
-│   │   ├── onboarding2.dart
-│   │   └── onboarding3.dart
-│   └── home_screen.dart
-├── widgets/
-│   ├── custom_button.dart
-│   └── indicator.dart
-├── services/
-│   └── api_service.dart
-└── providers/
-    └── app_provider.dart
-```
-
----
 
 ## 🌐 Responsive Design  
 - Implemented using:
@@ -113,7 +89,7 @@ Contributions are welcome!
 
 ## 📩 Contact  
 👨‍💻 **Developer:** Akhand Singh  
-📧 **Email:** yourname@email.com  
+📧 **Email:** akhandsingh0707@gmail.com  
 🌐 **GitHub:** [yourusername](https://github.com/yourusername)
 [README.md](https://github.com/user-attachments/files/22776077/README.md)
 .dev/get-started/codelab)
