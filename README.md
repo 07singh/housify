@@ -31,7 +31,10 @@ It features a clean and responsive UI, smooth navigation, and API integration fo
 ## 📸 Screenshots  
 | Onboarding 1 | Onboarding 2 | Onboarding 3 |
 |:-------------:|:-------------:|:-------------:|
-| ![Screen1](6e9b5606-8ce5-43df-b306-a50f6eac7fdf.png) | ![Screen2](dddf5817-88bb-4971-9ba7-7a04517be601.png) | ![Screen3](087278a8-ae85-4b61-9134-db13cbc547e1.png) |
+| ![Screen1](<img width="750" height="1624" alt="image" src="https://github.com/user-attachments/assets/56e5cccf-6497-40f2-b76d-a7b0cd96c4f3" />
+) | ![Screen2](<img width="750" height="1624" alt="image" src="https://github.com/user-attachments/assets/11f22978-3c9e-4103-a02e-ca65cd6f1c87" />
+) | ![Screen3](<img width="750" height="1624" alt="image" src="https://github.com/user-attachments/assets/1b12a33a-ac57-4063-9fda-120e8469e07a" />
+) |
 
 ---
 
